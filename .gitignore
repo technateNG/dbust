@@ -1,0 +1,11 @@
+.idea/
+cmake-build-*/
+dbust.cbp
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/Makefile
+**/CMakeFiles
+**/CTestTestfile.cmake
+src/dbust
+src/libdbust.a
+test/dbust-tests
