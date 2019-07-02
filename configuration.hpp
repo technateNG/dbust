@@ -2,8 +2,6 @@
 
 #include <vector>
 #include <unordered_set>
-#include <bits/unique_ptr.h>
-#include <bits/shared_ptr.h>
 
 class Configuration
 {
@@ -21,7 +19,13 @@ class Configuration
 
   std::size_t nb_of_sockets{ 0 };
 
-  Configuration();
+  std::size_t timeout{ 0 };
+public:
+    size_t get_timeout() const;
+
+private:
+
+    Configuration();
 
 public:
     const std::unordered_set<std::string>& get_status_codes() const;
@@ -38,7 +42,7 @@ public:
 
     class Builder
     {
-        Configuration* config_ptr;
+        static Configuration config;
 
     public:
         Builder& set_host(const std::string& new_host);
@@ -54,6 +58,8 @@ public:
         Builder& set_nb_of_sockets(std::size_t new_nb_of_sockets);
 
         Builder& set_ssl(bool is_ssl);
+
+        Builder& set_timeout(std::size_t new_timeout);
 
         Configuration& build();
 

@@ -1,3 +1,5 @@
+
+
 #include "main.hpp"
 #include "unit.hpp"
 
@@ -34,7 +36,9 @@ bool is_in_status_codes(const char* buff, std::unordered_set<std::string>& statu
     return res;
 }
 
-int main() {
+
+
+int main(int argc, char* argv[]) {
     ::addrinfo hints{};
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
