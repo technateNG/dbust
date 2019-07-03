@@ -10,7 +10,11 @@
 class CmdParser
 {
     static const std::string description;
-    static std::vector<std::string> load_dictionary(const char* file_name);
+
+    std::unordered_set<std::string> parse_delimited_opt(const char* opt);
+
+    static std::unordered_set<std::string> load_dictionary(const char* file_name);
+
 public:
     Configuration& parse(int argc, char* argv[]);
 };

@@ -1,7 +1,4 @@
-
-
 #include "main.hpp"
-#include "unit.hpp"
 
 inline int get_socket(addrinfo& addrinfo)
 {
@@ -38,7 +35,11 @@ bool is_in_status_codes(const char* buff, std::unordered_set<std::string>& statu
 
 
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
+    CmdParser cmd_parser;
+    auto c = cmd_parser.parse(argc, argv);
+    std::cout << c.get_host() << std::endl;
     ::addrinfo hints{};
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;

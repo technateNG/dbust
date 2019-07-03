@@ -1,21 +1,17 @@
 #pragma once
 
-#include <vector>
 #include <unordered_set>
+#include "target.hpp"
 
 class Configuration
 {
   std::unordered_set<std::string> status_codes;
 
-  std::vector<std::string> file_extensions;
+  std::unordered_set<std::string> file_extensions;
 
-  std::vector<std::string> dictionary;
+  std::unordered_set<std::string> dictionary;
 
-  std::string host;
-
-  std::string port;
-
-  bool ssl{ false };
+  Target target;
 
   std::size_t nb_of_sockets{ 0 };
 
@@ -30,7 +26,7 @@ private:
 public:
     const std::unordered_set<std::string>& get_status_codes() const;
 
-    const std::vector<std::string>& get_file_extensions() const;
+    const std::unordered_set<std::string>& get_file_extensions() const;
 
     const std::string& get_host() const;
 
@@ -49,9 +45,9 @@ public:
 
         Builder& set_port(const std::string& new_port);
 
-        Builder& set_dictionary(const std::vector<std::string>& new_dictionary);
+        Builder& set_dictionary(const std::unordered_set<std::string>& new_dictionary);
 
-        Builder& set_file_extensions(const std::vector<std::string>& new_file_extensions);
+        Builder& set_file_extensions(const std::unordered_set<std::string>& new_file_extensions);
 
         Builder& set_status_codes(const std::unordered_set<std::string>& new_status_codes);
 

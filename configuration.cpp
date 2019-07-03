@@ -7,7 +7,7 @@ const std::unordered_set<std::string>& Configuration::get_status_codes() const
     return status_codes;
 }
 
-const std::vector<std::string>& Configuration::get_file_extensions() const
+const std::unordered_set<std::string>& Configuration::get_file_extensions() const
 {
     return file_extensions;
 }
@@ -65,13 +65,13 @@ Configuration::Builder& Configuration::Builder::set_status_codes(const std::unor
     return *this;
 }
 
-Configuration::Builder& Configuration::Builder::set_file_extensions(const std::vector<std::string>& new_file_extensions)
+Configuration::Builder& Configuration::Builder::set_file_extensions(const std::unordered_set<std::string>& new_file_extensions)
 {
     config.file_extensions = new_file_extensions;
     return *this;
 }
 
-Configuration::Builder& Configuration::Builder::set_dictionary(const std::vector<std::string>& new_dictionary)
+Configuration::Builder& Configuration::Builder::set_dictionary(const std::unordered_set<std::string>& new_dictionary)
 {
     config.dictionary = new_dictionary;
     return *this;
@@ -89,7 +89,8 @@ Configuration::Builder& Configuration::Builder::set_host(const std::string& new_
     return *this;
 }
 
-Configuration& Configuration::Builder::build() {
+Configuration& Configuration::Builder::build()
+{
     return config;
 }
 
