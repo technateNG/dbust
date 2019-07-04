@@ -5,27 +5,20 @@ inline int get_socket(addrinfo& addrinfo)
     return ::socket(addrinfo.ai_family, addrinfo.ai_socktype, addrinfo.ai_protocol);
 }
 
-std::string create_request(std::string& path)
+std::string create_request(std::string& path, Configuration& config)
 {
-    std::string res{ "HEAD " };
+    std::string res{ config.is_get() ? "GET " :  "HEAD " };
+    res += config.get_target().get_resource_path();
     res += path;
     res += " HTTP/1.1\r\nHost: ";
-    res += "192.168.122.134";
+    res += config.get_target().get_host();
     res += "\r\nUser-Agent: ";
-    res += "curl/7.58.0";
+    res += config.get_user_agent();
     res += "\r\nAccept: */*\r\n\r\n";
-    //"HEAD " +
-    //path +
-    //" HTTP/1.1\r\nHost: " +
-    //host +
-    //"\r\nUser-Agent: " +
-    //ua +
-    //"\r\nAccept: */*\r\n\r\n";
-    //res.reserve(53 + host.len + ua.len + path.length());*/
     return res;
 }
 
-bool is_in_status_codes(const char* buff, std::unordered_set<std::string>& status_codes) {
+bool is_in_status_codes(const char* buff, const std::unordered_set<std::string>& status_codes) {
     std::string_view buff_view(buff);
     std::string_view sc{ buff_view.substr(9, 3) };
     const char* scd = sc.data();
@@ -33,13 +26,10 @@ bool is_in_status_codes(const char* buff, std::unordered_set<std::string>& statu
     return res;
 }
 
-
-
 int main(int argc, char* argv[])
 {
     CmdParser cmd_parser;
-    auto c = cmd_parser.parse(argc, argv);
-    std::cout << c.get_host() << std::endl;
+    auto config = cmd_parser.parse(argc, argv);
     ::addrinfo hints{};
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -50,33 +40,52 @@ int main(int argc, char* argv[])
     hints.ai_next = nullptr;
 
     ::addrinfo* dns_result;
-    ::getaddrinfo("192.168.122.134", "443", &hints, &dns_result);
+    ::getaddrinfo(
+            config.get_target().get_host().c_str(),
+            config.get_target().get_port().c_str(),
+            &hints,
+            &dns_result
+            );
 
-    ::SSL_library_init();
-    ::SSLeay_add_ssl_algorithms();
-    ::SSL_load_error_strings();
-    ::SSL_CTX* ctx = ::SSL_CTX_new(TLS_client_method());
-
-    std::vector<std::string> dictionary
-    {"/f1", "/f2", "/f3", "/f4", "/f5", "/f6", "/f7", "/f8"};
-    std::unordered_set<std::string> status_codes
-    {"200", "201", "301", "302", "500", "401", "403"};
     std::vector<pollfd> polls;
-    polls.reserve(2);
+    polls.reserve(config.get_nb_of_sockets());
     std::vector<Unit> units;
-    units.reserve(2);
-    for (std::size_t i = 0; i < 2; ++i)
+    units.reserve(config.get_nb_of_sockets());
+    ::SSL_CTX* ctx{ nullptr };
+    if (config.get_target().is_ssl())
     {
-        Unit unit(SslFlavour::instance(*ctx), get_socket(*dns_result));
-        unit.prepare();
-        units.emplace_back(unit);
-        ::pollfd pfd{};
-        pfd.fd = unit.get_file_descriptor();
-        pfd.events = POLLIN | POLLOUT;
-        polls.emplace_back(pfd);
+        ::SSL_library_init();
+        ::SSLeay_add_ssl_algorithms();
+        ::SSL_load_error_strings();
+         ctx = ::SSL_CTX_new(TLS_client_method());
+        for (std::size_t i = 0; i < config.get_nb_of_sockets(); ++i)
+        {
+            Unit unit(SslFlavour::instance(*ctx), get_socket(*dns_result));
+            unit.prepare();
+            units.emplace_back(unit);
+            ::pollfd pfd{};
+            pfd.fd = unit.get_file_descriptor();
+            pfd.events = POLLIN | POLLOUT;
+            polls.emplace_back(pfd);
+        }
     }
+    else
+    {
+        for (std::size_t i = 0; i < config.get_nb_of_sockets(); ++i)
+        {
+            Unit unit(HttpFlavour::instance(), get_socket(*dns_result));
+            unit.prepare();
+            units.emplace_back(unit);
+            ::pollfd pfd{};
+            pfd.fd = unit.get_file_descriptor();
+            pfd.events = POLLIN | POLLOUT;
+            polls.emplace_back(pfd);
+        }
+    }
+
     std::size_t word_ptr{ 0 };
-    while (word_ptr < dictionary.size())
+    std::size_t ext_pointer{ 0 };
+    while (word_ptr < config.get_dictionary().size())
     {
         poll(polls.data(), polls.size(), 0);
         for (std::size_t i = 0; i < polls.size(); ++i)
@@ -87,7 +96,7 @@ int main(int argc, char* argv[])
             {
                 char buff[12] { '\0' };
                 unit.receive(buff, 12);
-                if (is_in_status_codes(buff, status_codes))
+                if (is_in_status_codes(buff, config.get_status_codes()))
                 {
                     std::cout << unit.get_path() << std::endl;
                 }
@@ -100,12 +109,20 @@ int main(int argc, char* argv[])
             else if (unit.get_state() == Unit::State::EMPTY && pfd.revents & POLLOUT)
             {
                 unit.connect(*dns_result);
-                if (unit.get_state() != Unit::State::EXCEPTION)
+                if (unit.get_state() != Unit::State::BROKEN)
                 {
-                    unit.set_path(dictionary.at(word_ptr));
+                    std::string t_path{ config.get_dictionary()[word_ptr] };
+                    t_path += '.';
+                    t_path += config.get_file_extensions()[ext_pointer];
+                    unit.set_path(t_path);
                     ++word_ptr;
+                    ++ext_pointer;
+                    if (ext_pointer >= config.get_file_extensions().size())
+                    {
+                        ext_pointer = 0;
+                    }
                 }
-                auto request = create_request(unit.get_path());
+                auto request = create_request(unit.get_path(), config);
                 unit.send(request);
             }
             else
@@ -114,9 +131,11 @@ int main(int argc, char* argv[])
                 {
                     std::chrono::duration<double> duration =
                             std::chrono::system_clock::now() - unit.get_time_point();
-                    if (duration.count() > 10)
+                    if (duration.count() > config.get_timeout())
                     {
-                        unit.set_state(Unit::State::EXCEPTION);
+                        unit.set_state(Unit::State::BROKEN);
+                        std::cerr << "[!] Timeout hit for endpoint: " << unit.get_path() <<
+                        " Reconnect issued." << std::endl;
                         unit.close();
                         int fd = get_socket(*dns_result);
                         pfd.fd = fd;
@@ -132,6 +151,9 @@ int main(int argc, char* argv[])
         }
     }
     ::freeaddrinfo(dns_result);
-    ::SSL_CTX_free(ctx);
+    if (config.get_target().is_ssl())
+    {
+        ::SSL_CTX_free(ctx);
+    }
     return EXIT_SUCCESS;
 }

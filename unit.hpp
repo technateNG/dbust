@@ -6,7 +6,7 @@
 struct Unit {
     enum class State
     {
-        EXCEPTION,
+        BROKEN,
         EMPTY,
         SENDED
     };
@@ -46,9 +46,14 @@ struct Unit {
     explicit Unit(ConnectionFlavour& flavour, int fd);
 private:
     ConnectionFlavour& flavour;
+
     ::ssl_st* ssl_ptr{ nullptr };
+
     State state{ State::EMPTY };
+
     int file_descriptor;
+
     std::string path;
+
     std::chrono::time_point<std::chrono::system_clock> time_point;
 };

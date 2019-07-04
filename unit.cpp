@@ -19,13 +19,11 @@ void Unit::receive(char* buffer, std::size_t length)
 void Unit::send(std::string &request)
 {
     flavour.send(*this, request);
-    state = Unit::State::SENDED;
 }
 
 void Unit::prepare()
 {
     flavour.prepare(*this);
-    state = Unit::State::EMPTY;
 }
 
 void Unit::set_ssl_ptr(::ssl_st *ssl)

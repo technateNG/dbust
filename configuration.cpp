@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "configuration.hpp"
 
 Configuration Configuration::Builder::config;
@@ -12,21 +14,6 @@ const std::unordered_set<std::string>& Configuration::get_file_extensions() cons
     return file_extensions;
 }
 
-const std::string& Configuration::get_host() const
-{
-    return host;
-}
-
-const std::string& Configuration::get_port() const
-{
-    return port;
-}
-
-bool Configuration::is_ssl() const
-{
-    return ssl;
-}
-
 std::size_t Configuration::get_nb_of_sockets() const
 {
     return nb_of_sockets;
@@ -37,6 +24,26 @@ std::size_t Configuration::get_timeout() const
     return timeout;
 }
 
+const Target& Configuration::get_target() const
+{
+    return *target;
+}
+
+bool Configuration::is_get() const
+{
+    return get;
+}
+
+std::vector<std::string> &Configuration::get_dictionary()
+{
+    return dictionary;
+}
+
+const std::string &Configuration::get_user_agent() const
+{
+    return user_agent;
+}
+
 Configuration::Configuration() = default;
 
 Configuration::Builder::Builder() = default;
@@ -44,12 +51,6 @@ Configuration::Builder::Builder() = default;
 Configuration::Builder& Configuration::Builder::set_timeout(std::size_t new_timeout)
 {
     config.timeout = new_timeout;
-    return *this;
-}
-
-Configuration::Builder& Configuration::Builder::set_ssl(bool is_ssl)
-{
-    config.ssl = is_ssl;
     return *this;
 }
 
@@ -65,33 +66,39 @@ Configuration::Builder& Configuration::Builder::set_status_codes(const std::unor
     return *this;
 }
 
-Configuration::Builder& Configuration::Builder::set_file_extensions(const std::unordered_set<std::string>& new_file_extensions)
+Configuration::Builder& Configuration::Builder::set_file_extensions(const std::vector<std::string>& new_file_extensions)
 {
     config.file_extensions = new_file_extensions;
     return *this;
 }
 
-Configuration::Builder& Configuration::Builder::set_dictionary(const std::unordered_set<std::string>& new_dictionary)
+Configuration::Builder& Configuration::Builder::set_dictionary(const std::vector<std::string>& new_dictionary)
 {
     config.dictionary = new_dictionary;
-    return *this;
-}
-
-Configuration::Builder& Configuration::Builder::set_port(const std::string& new_port)
-{
-    config.port = new_port;
-    return *this;
-}
-
-Configuration::Builder& Configuration::Builder::set_host(const std::string& new_host)
-{
-    config.host = new_host;
     return *this;
 }
 
 Configuration& Configuration::Builder::build()
 {
     return config;
+}
+
+Configuration::Builder &Configuration::Builder::set_target(const Target& new_target)
+{
+    config.target = &new_target;
+    return *this;
+}
+
+Configuration::Builder &Configuration::Builder::set_get(bool new_get)
+{
+    config.get = new_get;
+    return *this;
+}
+
+Configuration::Builder &Configuration::Builder::set_user_agent(std::string new_ua)
+{
+    config.user_agent = std::move(new_ua);
+    return *this;
 }
 
 
