@@ -36,24 +36,24 @@ Configuration& CmdParser::parse(int argc, char** argv) {
     int option_index{ 0 };
     std::size_t bitmask{ 0 };
     Configuration::Builder builder;
-    while ((c = getopt_long(argc, argv, "c:t:e:s:w:u:h", long_options, &option_index)) != -1)
+    while ((c = getopt_long(argc, argv, "c:t:e:s:d:u:h", long_options, &option_index)) != -1)
     {
         switch (c)
         {
             case 'c':
             {
                 auto sc_vec{ parse_delimited_opt(optarg) };
-                std::unordered_set<std::string> sc_set;
-                for (auto& sc : sc_vec)
-                {
-                    sc_set.insert(sc);
-                }
+                std::unordered_set<std::string> sc_set(sc_vec.cbegin(), sc_vec.cend());
                 builder.set_status_codes(sc_set);
                 break;
             }
             case 'e':
             {
                 auto ex_vec{ parse_delimited_opt(optarg) };
+                for (auto& ex : ex_vec)
+                {
+                    ex.insert(0, 1, '.');
+                }
                 ex_vec.emplace_back("");
                 builder.set_file_extensions(ex_vec);
                 break;
@@ -87,9 +87,9 @@ Configuration& CmdParser::parse(int argc, char** argv) {
         case 3:
             return builder.build();
         case 2:
-            throw ArgumentNotSet("Dictionary");
-        case 1:
             throw ArgumentNotSet("URL");
+        case 1:
+            throw ArgumentNotSet("Dictionary");
         case 0:
             throw ArgumentNotSet("URL, Dictionary");
         default:
@@ -144,7 +144,7 @@ std::vector<std::string> CmdParser::load_dictionary(const char* file_name)
     };
     std::string_view view(mapped_addr, dict_len);
     std::vector<std::string> res;
-    std::string tmp_str { '/' };
+    std::string tmp_str;
     for (auto& c : view)
     {
         switch (c)
@@ -168,7 +168,7 @@ std::vector<std::string> CmdParser::load_dictionary(const char* file_name)
             case '\r':
             case '\n': {
                 res.push_back(std::move(tmp_str));
-                tmp_str = '/';
+                tmp_str = "";
                 break;
             }
             default: {

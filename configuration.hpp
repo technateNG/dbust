@@ -8,7 +8,7 @@ class Configuration
 {
   std::unordered_set<std::string> status_codes;
 
-  std::vector<std::string> file_extensions;
+  std::vector<std::string> file_extensions{ "" };
 
   std::vector<std::string> dictionary;
 
@@ -20,7 +20,7 @@ class Configuration
 
   bool get{ false };
 
-  std::string user_agent;
+  std::string user_agent{ "dbust" };
 
   Configuration();
 

@@ -21,7 +21,7 @@ std::string create_request(std::string& path, Configuration& config)
 bool is_in_status_codes(const char* buff, const std::unordered_set<std::string>& status_codes) {
     std::string_view buff_view(buff);
     std::string_view sc{ buff_view.substr(9, 3) };
-    const char* scd = sc.data();
+    const char* scd = sc.cbegin();
     int res = status_codes.count(scd);
     return res;
 }
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
             Unit& unit = units.at(i);
             if (unit.get_state() == Unit::State::SENDED && pfd.revents & POLLIN)
             {
-                char buff[12] { '\0' };
+                char buff[13] { '\0' };
                 unit.receive(buff, 12);
                 if (is_in_status_codes(buff, config.get_status_codes()))
                 {
@@ -112,7 +112,6 @@ int main(int argc, char* argv[])
                 if (unit.get_state() != Unit::State::BROKEN)
                 {
                     std::string t_path{ config.get_dictionary()[word_ptr] };
-                    t_path += '.';
                     t_path += config.get_file_extensions()[ext_pointer];
                     unit.set_path(t_path);
                     ++word_ptr;

@@ -32,6 +32,10 @@ Target::Target(const char *url)
             port = ssl ? "443" : "80";
         }
         resource_path = v_url.substr(e_port, v_url.length() - e_port);
+        if (*(resource_path.cend() - 1) != '/')
+        {
+            resource_path.push_back('/');
+        }
     }
     else
     {
