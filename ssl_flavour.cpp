@@ -1,15 +1,10 @@
 #include "ssl_flavour.hpp"
 #include "unit.hpp"
 
-SslFlavour::SslFlavour(
-        ::SSL_CTX& ctx
-        ) : ctx{ ctx }
-{
-}
+SslFlavour::SslFlavour() = default;
 
 void SslFlavour::prepare(Unit& unit)
 {
-    unit.set_ssl_ptr(::SSL_new(&ctx));
     SSL_set_fd(unit.get_ssl_ptr(), unit.get_file_descriptor());
 }
 
@@ -63,9 +58,9 @@ void SslFlavour::receive(Unit& unit, char* buffer, const std::size_t length)
     }
 }
 
-SslFlavour &SslFlavour::instance(::SSL_CTX& ctx)
+SslFlavour &SslFlavour::instance()
 {
-    static SslFlavour flavour(ctx);
+    static SslFlavour flavour;
     return flavour;
 }
 
@@ -73,6 +68,6 @@ void SslFlavour::close(Unit &unit)
 {
     ::SSL_shutdown(unit.get_ssl_ptr());
     ::SSL_clear(unit.get_ssl_ptr());
-    ::SSL_free(unit.get_ssl_ptr());
+    //::SSL_free(unit.get_ssl_ptr());
 }
 

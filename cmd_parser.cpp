@@ -166,6 +166,7 @@ std::vector<std::string> CmdParser::load_dictionary(const char* file_name)
                 break;
             }
             case '\r':
+                break;
             case '\n': {
                 res.push_back(std::move(tmp_str));
                 tmp_str = "";

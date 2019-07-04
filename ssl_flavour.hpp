@@ -12,7 +12,7 @@ struct SslFlavour : public ConnectionFlavour
 
     SslFlavour(const SslFlavour& flavour) = delete;
 
-    SslFlavour(SslFlavour&& flvour) = delete;
+    SslFlavour(SslFlavour&& flavour) = delete;
 
     SslFlavour& operator=(const SslFlavour& flavour) = delete;
 
@@ -28,8 +28,7 @@ struct SslFlavour : public ConnectionFlavour
 
     void close(Unit &unit) override;
 
-    static SslFlavour& instance(::SSL_CTX& ctx);
+    static SslFlavour& instance();
 private:
-    explicit SslFlavour(SSL_CTX& ctx);
-    SSL_CTX& ctx;
+    explicit SslFlavour();
 };

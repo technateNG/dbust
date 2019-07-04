@@ -60,7 +60,8 @@ int main(int argc, char* argv[])
          ctx = ::SSL_CTX_new(TLS_client_method());
         for (std::size_t i = 0; i < config.get_nb_of_sockets(); ++i)
         {
-            Unit unit(SslFlavour::instance(*ctx), get_socket(*dns_result));
+            Unit unit(SslFlavour::instance(), get_socket(*dns_result));
+            unit.set_ssl_ptr(::SSL_new(ctx));
             unit.prepare();
             units.emplace_back(unit);
             ::pollfd pfd{};
@@ -106,7 +107,7 @@ int main(int argc, char* argv[])
                 unit.set_file_descriptor(fd);
                 unit.prepare();
             }
-            else if (unit.get_state() == Unit::State::EMPTY && pfd.revents & POLLOUT)
+            else if (unit.get_state() != Unit::State::SENDED && pfd.revents & POLLOUT)
             {
                 unit.connect(*dns_result);
                 if (unit.get_state() != Unit::State::BROKEN)
@@ -123,6 +124,7 @@ int main(int argc, char* argv[])
                 }
                 auto request = create_request(unit.get_path(), config);
                 unit.send(request);
+                unit.set_time_point(std::chrono::system_clock::from_time_t(0));
             }
             else
             {
@@ -136,9 +138,10 @@ int main(int argc, char* argv[])
                         std::cerr << "[!] Timeout hit for endpoint: " << unit.get_path() <<
                         " Reconnect issued." << std::endl;
                         unit.close();
+                        unit.set_time_point(std::chrono::system_clock::from_time_t(0));
                         int fd = get_socket(*dns_result);
                         pfd.fd = fd;
-                        unit.set_file_descriptor(get_socket(*dns_result));
+                        unit.set_file_descriptor(fd);
                         unit.prepare();
                     }
                 }
