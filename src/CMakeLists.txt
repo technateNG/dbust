@@ -12,6 +12,7 @@ add_executable(dbust
         configuration.cpp
         cmd_parser.cpp
         target.cpp
-        exceptions.cpp)
+        exceptions.cpp
+        utils.cpp)
 
 target_link_libraries(dbust OpenSSL::SSL)

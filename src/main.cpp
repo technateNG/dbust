@@ -1,31 +1,5 @@
 #include "main.hpp"
 
-inline int get_socket(addrinfo& addrinfo)
-{
-    return ::socket(addrinfo.ai_family, addrinfo.ai_socktype, addrinfo.ai_protocol);
-}
-
-std::string create_request(std::string& path, Configuration& config)
-{
-    std::string res{ config.is_get() ? "GET " :  "HEAD " };
-    res += config.get_target().get_resource_path();
-    res += path;
-    res += " HTTP/1.1\r\nHost: ";
-    res += config.get_target().get_host();
-    res += "\r\nUser-Agent: ";
-    res += config.get_user_agent();
-    res += "\r\nAccept: */*\r\n\r\n";
-    return res;
-}
-
-bool is_in_status_codes(const char* buff, const std::unordered_set<std::string>& status_codes) {
-    std::string_view buff_view(buff);
-    std::string_view sc{ buff_view.substr(9, 3) };
-    const char* scd = sc.cbegin();
-    int res = status_codes.count(scd);
-    return res;
-}
-
 int main(int argc, char* argv[])
 {
     CmdParser cmd_parser;
@@ -60,7 +34,7 @@ int main(int argc, char* argv[])
          ctx = ::SSL_CTX_new(TLS_client_method());
         for (std::size_t i = 0; i < config.get_nb_of_sockets(); ++i)
         {
-            Unit unit(SslFlavour::instance(), get_socket(*dns_result));
+            Unit unit(SslFlavour::instance(), dbust::utils::get_socket(*dns_result));
             unit.set_ssl_ptr(::SSL_new(ctx));
             unit.prepare();
             units.emplace_back(unit);
@@ -74,7 +48,7 @@ int main(int argc, char* argv[])
     {
         for (std::size_t i = 0; i < config.get_nb_of_sockets(); ++i)
         {
-            Unit unit(HttpFlavour::instance(), get_socket(*dns_result));
+            Unit unit(HttpFlavour::instance(), dbust::utils::get_socket(*dns_result));
             unit.prepare();
             units.emplace_back(unit);
             ::pollfd pfd{};
@@ -103,13 +77,13 @@ int main(int argc, char* argv[])
                 {
                     std::cout << counter << '/' << config.get_dictionary().size() << std::endl;
                 }
-                if (is_in_status_codes(buff, config.get_status_codes()))
+                if (dbust::utils::is_in_status_codes(buff, config.get_status_codes()))
                 {
                     std::cout << unit.get_path() << std::endl;
                 }
                 unit.close();
                 ++counter;
-                int fd = get_socket(*dns_result);
+                int fd = dbust::utils::get_socket(*dns_result);
                 pfd.fd = fd;
                 unit.set_file_descriptor(fd);
                 unit.prepare();
@@ -131,7 +105,7 @@ int main(int argc, char* argv[])
                             ++word_ptr;
                         }
                     }
-                    auto request = create_request(unit.get_path(), config);
+                    auto request = dbust::utils::create_request(unit.get_path(), config);
                     unit.send(request);
                     unit.set_time_point(std::chrono::system_clock::from_time_t(0));
                 }
@@ -139,7 +113,7 @@ int main(int argc, char* argv[])
                 {
                     unit.close();
                     unit.set_time_point(std::chrono::system_clock::from_time_t(0));
-                    int fd = get_socket(*dns_result);
+                    int fd = dbust::utils::get_socket(*dns_result);
                     pfd.fd = fd;
                     unit.set_file_descriptor(fd);
                     unit.prepare();
@@ -158,7 +132,7 @@ int main(int argc, char* argv[])
                         " Reconnect issued." << std::endl;
                         unit.close();
                         unit.set_time_point(std::chrono::system_clock::from_time_t(0));
-                        int fd = get_socket(*dns_result);
+                        int fd = dbust::utils::get_socket(*dns_result);
                         pfd.fd = fd;
                         unit.set_file_descriptor(fd);
                         unit.prepare();
