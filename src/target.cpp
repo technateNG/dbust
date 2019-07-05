@@ -1,7 +1,7 @@
 #include "target.hpp"
 #include "exceptions.hpp"
 
-Target::Target(const char *url)
+dbust::models::Target::Target(const char *url)
 {
     std::size_t eop{ 4 };
     if (url[0] == 'h' && url[1] == 't' && url[2] == 't' && url[3] == 'p')
@@ -39,32 +39,32 @@ Target::Target(const char *url)
     }
     else
     {
-        throw IncorrectUrl();
+        throw dbust::exceptions::IncorrectUrlException();
     }
 }
 
-const Target& Target::instance(const char* url)
+const dbust::models::Target& dbust::models::Target::instance(const char* url)
 {
     static Target target(url);
     return target;
 }
 
-const std::string& Target::get_host() const
+const std::string& dbust::models::Target::get_host() const
 {
     return host;
 }
 
-const std::string& Target::get_port() const
+const std::string& dbust::models::Target::get_port() const
 {
     return port;
 }
 
-const std::string& Target::get_resource_path() const
+const std::string& dbust::models::Target::get_resource_path() const
 {
     return resource_path;
 }
 
-bool Target::is_ssl() const
+bool dbust::models::Target::is_ssl() const
 {
     return ssl;
 }

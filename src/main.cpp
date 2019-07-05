@@ -2,7 +2,7 @@
 
 int main(int argc, char* argv[])
 {
-    CmdParser cmd_parser;
+    dbust::models::CmdParser cmd_parser;
     auto config = cmd_parser.parse(argc, argv);
     ::addrinfo hints{};
     hints.ai_family = AF_UNSPEC;
@@ -19,22 +19,25 @@ int main(int argc, char* argv[])
             config.get_target().get_port().c_str(),
             &hints,
             &dns_result
-            );
+    );
 
     std::vector<pollfd> polls;
     polls.reserve(config.get_nb_of_sockets());
-    std::vector<Unit> units;
+    std::vector<dbust::models::Unit> units;
     units.reserve(config.get_nb_of_sockets());
-    ::SSL_CTX* ctx{ nullptr };
+    ::SSL_CTX* ctx{nullptr};
     if (config.get_target().is_ssl())
     {
         ::SSL_library_init();
         ::SSLeay_add_ssl_algorithms();
         ::SSL_load_error_strings();
-         ctx = ::SSL_CTX_new(TLS_client_method());
+        ctx = ::SSL_CTX_new(TLS_client_method());
         for (std::size_t i = 0; i < config.get_nb_of_sockets(); ++i)
         {
-            Unit unit(SslFlavour::instance(), dbust::utils::get_socket(*dns_result));
+            dbust::models::Unit unit(
+                    dbust::flavours::SslFlavour::instance(),
+                    dbust::utils::get_socket(*dns_result)
+            );
             unit.set_ssl_ptr(::SSL_new(ctx));
             unit.prepare();
             units.emplace_back(unit);
@@ -43,12 +46,11 @@ int main(int argc, char* argv[])
             pfd.events = POLLIN | POLLOUT;
             polls.emplace_back(pfd);
         }
-    }
-    else
+    } else
     {
         for (std::size_t i = 0; i < config.get_nb_of_sockets(); ++i)
         {
-            Unit unit(HttpFlavour::instance(), dbust::utils::get_socket(*dns_result));
+            dbust::models::Unit unit(dbust::flavours::HttpFlavour::instance(), dbust::utils::get_socket(*dns_result));
             unit.prepare();
             units.emplace_back(unit);
             ::pollfd pfd{};
@@ -58,9 +60,9 @@ int main(int argc, char* argv[])
         }
     }
 
-    std::size_t word_ptr{ 0 };
-    std::size_t ext_pointer{ 0 };
-    std::size_t counter{ 0 };
+    std::size_t word_ptr{0};
+    std::size_t ext_pointer{0};
+    std::size_t counter{0};
     const std::size_t one_procent = config.get_dictionary().size() / 100;
     while (word_ptr < config.get_dictionary().size())
     {
@@ -68,10 +70,10 @@ int main(int argc, char* argv[])
         for (std::size_t i = 0; i < polls.size(); ++i)
         {
             ::pollfd& pfd = polls.at(i);
-            Unit& unit = units.at(i);
-            if (unit.get_state() == Unit::State::SENDED && pfd.revents & POLLIN)
+            dbust::models::Unit& unit = units.at(i);
+            if (unit.get_state() == dbust::models::Unit::State::SENDED && pfd.revents & POLLIN)
             {
-                char buff[13] { '\0' };
+                char buff[13]{'\0'};
                 unit.receive(buff, 12);
                 if (counter % one_procent == 0)
                 {
@@ -87,13 +89,15 @@ int main(int argc, char* argv[])
                 pfd.fd = fd;
                 unit.set_file_descriptor(fd);
                 unit.prepare();
-            }
-            else if (unit.get_state() != Unit::State::SENDED && pfd.revents & POLLOUT)
+            } else if (
+                    unit.get_state() != dbust::models::Unit::State::SENDED &&
+                    pfd.revents & POLLOUT
+                    )
             {
                 unit.connect(*dns_result);
-                if (unit.get_state() != Unit::State::DICONNECTED)
+                if (unit.get_state() != dbust::models::Unit::State::DICONNECTED)
                 {
-                    if (unit.get_state() != Unit::State::BROKEN)
+                    if (unit.get_state() != dbust::models::Unit::State::BROKEN)
                     {
                         std::string t_path{config.get_dictionary()[word_ptr]};
                         t_path += config.get_file_extensions()[ext_pointer];
@@ -108,8 +112,7 @@ int main(int argc, char* argv[])
                     auto request = dbust::utils::create_request(unit.get_path(), config);
                     unit.send(request);
                     unit.set_time_point(std::chrono::system_clock::from_time_t(0));
-                }
-                else
+                } else
                 {
                     unit.close();
                     unit.set_time_point(std::chrono::system_clock::from_time_t(0));
@@ -118,8 +121,7 @@ int main(int argc, char* argv[])
                     unit.set_file_descriptor(fd);
                     unit.prepare();
                 }
-            }
-            else
+            } else
             {
                 if (unit.get_time_point().time_since_epoch().count())
                 {
@@ -127,9 +129,9 @@ int main(int argc, char* argv[])
                             std::chrono::system_clock::now() - unit.get_time_point();
                     if (duration.count() > config.get_timeout())
                     {
-                        unit.set_state(Unit::State::BROKEN);
+                        unit.set_state(dbust::models::Unit::State::BROKEN);
                         std::cerr << "[!] Timeout hit for endpoint: " << unit.get_path() <<
-                        " Reconnect issued." << std::endl;
+                                  " Reconnect issued." << std::endl;
                         unit.close();
                         unit.set_time_point(std::chrono::system_clock::from_time_t(0));
                         int fd = dbust::utils::get_socket(*dns_result);
@@ -137,8 +139,7 @@ int main(int argc, char* argv[])
                         unit.set_file_descriptor(fd);
                         unit.prepare();
                     }
-                }
-                else
+                } else
                 {
                     unit.set_time_point(std::chrono::system_clock::now());
                 }

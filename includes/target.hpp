@@ -2,26 +2,29 @@
 
 #include <string>
 
-class Target
+namespace dbust::models
 {
-    std::string host;
+    class Target
+    {
+        std::string host;
 
-    std::string port;
+        std::string port;
 
-    std::string resource_path;
+        std::string resource_path;
 
-    bool ssl{ false };
+        bool ssl{false};
 
-    explicit Target(const char* url);
+        explicit Target(const char* url);
 
-public:
-    const std::string &get_host() const;
+    public:
+        const std::string& get_host() const;
 
-    const std::string &get_port() const;
+        const std::string& get_port() const;
 
-    const std::string &get_resource_path() const;
+        const std::string& get_resource_path() const;
 
-    bool is_ssl() const;
+        bool is_ssl() const;
 
-    static const Target& instance(const char* url);
-};
+        static const Target& instance(const char* url);
+    };
+}

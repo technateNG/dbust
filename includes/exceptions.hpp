@@ -3,21 +3,21 @@
 #include <string>
 #include <exception>
 
-struct IncorrectUrl : public std::exception
-{
-    const char* what() const noexcept override ;
-};
+namespace dbust::exceptions {
+    struct IncorrectUrlException : public std::exception {
+        const char *what() const noexcept override;
+    };
 
-struct ArgumentNotSet : public std::exception
-{
-    const char *what() const noexcept override;
+    struct ArgumentNotSetException : public std::exception {
+        const char *what() const noexcept override;
 
-    explicit ArgumentNotSet(std::string arg_name);
-private:
-    std::string arg_name;
-};
+        explicit ArgumentNotSetException(std::string arg_name);
 
-struct UnexpectedException : public std::exception
-{
-    const char *what() const noexcept override;
-};
+    private:
+        std::string arg_name;
+    };
+
+    struct UnexpectedException : public std::exception {
+        const char *what() const noexcept override;
+    };
+}

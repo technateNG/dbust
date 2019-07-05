@@ -2,83 +2,86 @@
 
 #include "unit.hpp"
 
-Unit::Unit(ConnectionFlavour &flavour, int fd) : flavour{ flavour }, file_descriptor{ fd }
+dbust::models::Unit::Unit(
+        dbust::flavours::ConnectionFlavour& flavour,
+        int fd
+) : flavour{flavour}, file_descriptor{fd}
 {
 }
 
-void Unit::connect(const ::addrinfo &addrinfo)
+void dbust::models::Unit::connect(const ::addrinfo& addrinfo)
 {
     flavour.connect(*this, addrinfo);
 }
 
-void Unit::receive(char* buffer, std::size_t length)
+void dbust::models::Unit::receive(char* buffer, std::size_t length)
 {
     flavour.receive(*this, buffer, length);
 }
 
-void Unit::send(std::string &request)
+void dbust::models::Unit::send(std::string& request)
 {
     flavour.send(*this, request);
 }
 
-void Unit::prepare()
+void dbust::models::Unit::prepare()
 {
     flavour.prepare(*this);
 }
 
-void Unit::set_ssl_ptr(::ssl_st *ssl)
+void dbust::models::Unit::set_ssl_ptr(::ssl_st* ssl)
 {
     ssl_ptr = ssl;
 }
 
-int Unit::get_file_descriptor()
+int dbust::models::Unit::get_file_descriptor()
 {
     return file_descriptor;
 }
 
-ssl_st* Unit::get_ssl_ptr()
+::ssl_st* dbust::models::Unit::get_ssl_ptr()
 {
     return ssl_ptr;
 }
 
-void Unit::close()
+void dbust::models::Unit::close()
 {
     flavour.close(*this);
 }
 
-void Unit::set_file_descriptor(int fd)
+void dbust::models::Unit::set_file_descriptor(int fd)
 {
     file_descriptor = fd;
 }
 
-void Unit::set_path(std::string& new_path)
+void dbust::models::Unit::set_path(std::string& new_path)
 {
     path = new_path;
 }
 
-std::string& Unit::get_path()
+std::string& dbust::models::Unit::get_path()
 {
     return path;
 }
 
-const std::chrono::time_point<std::chrono::system_clock>& Unit::get_time_point() const
+const std::chrono::time_point<std::chrono::system_clock>& dbust::models::Unit::get_time_point() const
 {
     return time_point;
 }
 
-void Unit::set_time_point(
-        const std::chrono::time_point<std::chrono::system_clock> &new_time_point
-        )
+void dbust::models::Unit::set_time_point(
+        const std::chrono::time_point<std::chrono::system_clock>& new_time_point
+)
 {
     time_point = new_time_point;
 }
 
-Unit::State Unit::get_state() const
+dbust::models::Unit::State dbust::models::Unit::get_state() const
 {
     return state;
 }
 
-void Unit::set_state(Unit::State new_state)
+void dbust::models::Unit::set_state(Unit::State new_state)
 {
     Unit::state = new_state;
 }

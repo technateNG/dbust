@@ -5,7 +5,7 @@ int dbust::utils::get_socket(addrinfo& addrinfo)
     return ::socket(addrinfo.ai_family, addrinfo.ai_socktype, addrinfo.ai_protocol);
 }
 
-std::string dbust::utils::create_request(std::string& path, Configuration& config)
+std::string dbust::utils::create_request(std::string& path, dbust::models::Configuration& config)
 {
     std::string res{ config.is_get() ? "GET " :  "HEAD " };
     res += config.get_target().get_resource_path();

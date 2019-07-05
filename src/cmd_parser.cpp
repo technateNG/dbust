@@ -1,7 +1,7 @@
 #include "cmd_parser.hpp"
 #include "exceptions.hpp"
 
-const std::string CmdParser::description
+const std::string dbust::models::CmdParser::description
 {
     "Usage: dbust [OPTION...]\n\n"
     "-u, --url <string> (*)                                               target url\n"
@@ -18,7 +18,7 @@ const std::string CmdParser::description
     "dbust -c '200,201,400,401,403,500' -e 'php,txt' -s 1000 -u http://192.168.0.92:8080/ -w /home/user/dict.txt\n"
 };
 
-Configuration& CmdParser::parse(int argc, char** argv) {
+dbust::models::Configuration& dbust::models::CmdParser::parse(int argc, char** argv) {
     int get{ 0 };
     ::option long_options[]
     {
@@ -87,18 +87,18 @@ Configuration& CmdParser::parse(int argc, char** argv) {
         case 3:
             return builder.build();
         case 2:
-            throw ArgumentNotSet("URL");
+            throw dbust::exceptions::ArgumentNotSetException("URL");
         case 1:
-            throw ArgumentNotSet("Dictionary");
+            throw dbust::exceptions::ArgumentNotSetException("Dictionary");
         case 0:
-            throw ArgumentNotSet("URL, Dictionary");
+            throw dbust::exceptions::ArgumentNotSetException("URL, Dictionary");
         default:
-            throw UnexpectedException();
+            throw dbust::exceptions::UnexpectedException();
     }
 }
 
 
-std::vector<std::string> CmdParser::parse_delimited_opt(const char* opt)
+std::vector<std::string> dbust::models::CmdParser::parse_delimited_opt(const char* opt)
 {
     std::string_view r_opt(opt);
     auto f_opt = r_opt.substr(1, r_opt.length() - 2);
@@ -120,7 +120,7 @@ std::vector<std::string> CmdParser::parse_delimited_opt(const char* opt)
     return res;
 }
 
-std::vector<std::string> CmdParser::load_dictionary(const char* file_name)
+std::vector<std::string> dbust::models::CmdParser::load_dictionary(const char* file_name)
 {
     int fd = ::open(file_name, O_RDONLY);
     if (fd < 0)

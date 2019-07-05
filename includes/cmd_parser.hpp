@@ -7,14 +7,15 @@
 #include <fcntl.h>
 #include "configuration.hpp"
 
-class CmdParser
-{
-    static const std::string description;
+namespace dbust::models {
+    class CmdParser {
+        static const std::string description;
 
-    static std::vector<std::string> parse_delimited_opt(const char* opt);
+        static std::vector<std::string> parse_delimited_opt(const char *opt);
 
-    static std::vector<std::string> load_dictionary(const char* file_name);
+        static std::vector<std::string> load_dictionary(const char *file_name);
 
-public:
-    Configuration& parse(int argc, char* argv[]);
-};
+    public:
+        Configuration &parse(int argc, char *argv[]);
+    };
+}
