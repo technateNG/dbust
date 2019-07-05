@@ -8,7 +8,8 @@ struct Unit {
     {
         BROKEN,
         EMPTY,
-        SENDED
+        SENDED,
+        DICONNECTED
     };
 
     void send(std::string& request);

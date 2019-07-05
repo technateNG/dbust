@@ -100,10 +100,11 @@ Configuration& CmdParser::parse(int argc, char** argv) {
 
 std::vector<std::string> CmdParser::parse_delimited_opt(const char* opt)
 {
-    std::string_view v_opt(opt);
+    std::string_view r_opt(opt);
+    auto f_opt = r_opt.substr(1, r_opt.length() - 2);
     std::vector<std::string> res;
     std::string tmp;
-    for (const char c : v_opt)
+    for (const char c : f_opt)
     {
         if (c == ',')
         {

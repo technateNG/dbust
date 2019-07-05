@@ -86,6 +86,8 @@ int main(int argc, char* argv[])
 
     std::size_t word_ptr{ 0 };
     std::size_t ext_pointer{ 0 };
+    std::size_t counter{ 0 };
+    const std::size_t one_procent = config.get_dictionary().size() / 100;
     while (word_ptr < config.get_dictionary().size())
     {
         poll(polls.data(), polls.size(), 0);
@@ -97,11 +99,16 @@ int main(int argc, char* argv[])
             {
                 char buff[13] { '\0' };
                 unit.receive(buff, 12);
+                if (counter % one_procent == 0)
+                {
+                    std::cout << counter << '/' << config.get_dictionary().size() << std::endl;
+                }
                 if (is_in_status_codes(buff, config.get_status_codes()))
                 {
                     std::cout << unit.get_path() << std::endl;
                 }
                 unit.close();
+                ++counter;
                 int fd = get_socket(*dns_result);
                 pfd.fd = fd;
                 unit.set_file_descriptor(fd);
@@ -110,21 +117,33 @@ int main(int argc, char* argv[])
             else if (unit.get_state() != Unit::State::SENDED && pfd.revents & POLLOUT)
             {
                 unit.connect(*dns_result);
-                if (unit.get_state() != Unit::State::BROKEN)
+                if (unit.get_state() != Unit::State::DICONNECTED)
                 {
-                    std::string t_path{ config.get_dictionary()[word_ptr] };
-                    t_path += config.get_file_extensions()[ext_pointer];
-                    unit.set_path(t_path);
-                    ++word_ptr;
-                    ++ext_pointer;
-                    if (ext_pointer >= config.get_file_extensions().size())
+                    if (unit.get_state() != Unit::State::BROKEN)
                     {
-                        ext_pointer = 0;
+                        std::string t_path{config.get_dictionary()[word_ptr]};
+                        t_path += config.get_file_extensions()[ext_pointer];
+                        unit.set_path(t_path);
+                        ++ext_pointer;
+                        if (ext_pointer >= config.get_file_extensions().size())
+                        {
+                            ext_pointer = 0;
+                            ++word_ptr;
+                        }
                     }
+                    auto request = create_request(unit.get_path(), config);
+                    unit.send(request);
+                    unit.set_time_point(std::chrono::system_clock::from_time_t(0));
                 }
-                auto request = create_request(unit.get_path(), config);
-                unit.send(request);
-                unit.set_time_point(std::chrono::system_clock::from_time_t(0));
+                else
+                {
+                    unit.close();
+                    unit.set_time_point(std::chrono::system_clock::from_time_t(0));
+                    int fd = get_socket(*dns_result);
+                    pfd.fd = fd;
+                    unit.set_file_descriptor(fd);
+                    unit.prepare();
+                }
             }
             else
             {

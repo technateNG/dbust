@@ -44,7 +44,7 @@ void HttpFlavour::connect(Unit &unit, const ::addrinfo &addrinfo)
     {
         std::cerr << "[!] Can't connect to target. Error message: " <<
         strerror(errno) << ". Reconnect issued." << std::endl;
-        unit.set_state(Unit::State::BROKEN);
+        unit.set_state(Unit::State::DICONNECTED);
     }
 }
 

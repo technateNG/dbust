@@ -13,20 +13,16 @@ void SslFlavour::connect(Unit& unit,  const ::addrinfo& addrinfo)
     auto s_conn = ::connect(unit.get_file_descriptor(), addrinfo.ai_addr, addrinfo.ai_addrlen);
     if (s_conn < 0)
     {
-        std::cerr << "[!] Can't connect to target. Error message: " <<
-                  strerror(errno) << ". Reconnect issued." << std::endl;
-        unit.set_state(Unit::State::BROKEN);
+        std::cerr << "[!] Can't connect " << unit.get_path() << " to target.  Error message: " <<
+                  strerror(errno) << ". Error num: " <<  std::to_string(errno) << ". Reconnect issued." << std::endl;
+        unit.set_state(Unit::State::DICONNECTED);
         return;
     }
     s_conn = ::SSL_connect(unit.get_ssl_ptr());
     if (s_conn < 0)
     {
         std::cerr << "[!] Can't establish SSL connection to target. Reconnect issued." << std::endl;
-        unit.set_state(Unit::State::BROKEN);
-    }
-    else
-    {
-        unit.set_state(Unit::State::SENDED);
+        unit.set_state(Unit::State::DICONNECTED);
     }
 }
 
@@ -68,6 +64,6 @@ void SslFlavour::close(Unit &unit)
 {
     ::SSL_shutdown(unit.get_ssl_ptr());
     ::SSL_clear(unit.get_ssl_ptr());
-    //::SSL_free(unit.get_ssl_ptr());
+    ::close(unit.get_file_descriptor());
 }
 
