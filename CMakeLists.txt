@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(dbust)
+project(dbust LANGUAGES CXX VERSION 0.1)
 
 include_directories(includes)
 
 add_subdirectory(src)
-add_subdirectory(test)
 
-#enable_testing()
-#add_test(NAME test COMMAND test)
+enable_testing()
+add_subdirectory(test)
+add_test(NAME dbust_tests COMMAND test)

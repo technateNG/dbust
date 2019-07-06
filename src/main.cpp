@@ -50,7 +50,10 @@ int main(int argc, char* argv[])
     {
         for (std::size_t i = 0; i < config.get_nb_of_sockets(); ++i)
         {
-            dbust::models::Unit unit(dbust::flavours::HttpFlavour::instance(), dbust::utils::get_socket(*dns_result));
+            dbust::models::Unit unit(
+                    dbust::flavours::HttpFlavour::instance(),
+                    dbust::utils::get_socket(*dns_result)
+            );
             unit.prepare();
             units.emplace_back(unit);
             ::pollfd pfd{};
@@ -63,7 +66,7 @@ int main(int argc, char* argv[])
     std::size_t word_ptr{0};
     std::size_t ext_pointer{0};
     std::size_t counter{0};
-    const std::size_t one_procent = config.get_dictionary().size() / 100;
+    const std::size_t one_percent = config.get_dictionary().size() / 100;
     while (word_ptr < config.get_dictionary().size())
     {
         poll(polls.data(), polls.size(), 0);
@@ -75,11 +78,13 @@ int main(int argc, char* argv[])
             {
                 char buff[13]{'\0'};
                 unit.receive(buff, 12);
-                if (counter % one_procent == 0)
+                dbust::models::Response response(buff);
+                if (counter % one_percent == 0)
                 {
-                    std::cout << counter << '/' << config.get_dictionary().size() << std::endl;
+                    std::cerr << "[*] " << '(' << counter / one_percent << "%) " <<
+                    counter << '/' << config.get_dictionary().size() << std::endl;
                 }
-                if (dbust::utils::is_in_status_codes(buff, config.get_status_codes()))
+                if (config.get_status_codes().contains(response.get_status_code_ptr()))
                 {
                     std::cout << unit.get_path() << std::endl;
                 }

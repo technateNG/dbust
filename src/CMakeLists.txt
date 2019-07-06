@@ -13,6 +13,20 @@ add_executable(dbust
         cmd_parser.cpp
         target.cpp
         exceptions.cpp
-        utils.cpp)
+        utils.cpp
+        status_codes.cpp
+        response.cpp)
+
+add_library(libdbust
+        ssl_flavour.cpp
+        http_flavour.cpp
+        unit.cpp
+        configuration.cpp
+        cmd_parser.cpp
+        target.cpp
+        exceptions.cpp
+        utils.cpp
+        status_codes.cpp
+        response.cpp)
 
 target_link_libraries(dbust OpenSSL::SSL)

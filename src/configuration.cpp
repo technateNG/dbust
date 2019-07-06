@@ -1,10 +1,16 @@
 #include <utility>
 
+#include <utility>
+
 #include "configuration.hpp"
 
-dbust::models::Configuration dbust::models::Configuration::Builder::config;
+dbust::models::Configuration dbust::models::Configuration::Builder::config(
+        StatusCodes{"200", "201", "204", "301", "302", "307", "400", "401", "403", "500"},
+        700,
+        10
+        );
 
-const std::unordered_set<std::string>& dbust::models::Configuration::get_status_codes() const
+const dbust::models::StatusCodes& dbust::models::Configuration::get_status_codes() const
 {
     return status_codes;
 }
@@ -44,17 +50,15 @@ const std::string& dbust::models::Configuration::get_user_agent() const
     return user_agent;
 }
 
-dbust::models::Configuration::Configuration() = default;
-
-dbust::models::Configuration::Builder::Builder()
+dbust::models::Configuration::Configuration(
+        dbust::models::StatusCodes  sc,
+        std::size_t nbs,
+        std::size_t timeout
+) : status_codes{std::move(sc)}, nb_of_sockets{nbs}, timeout{timeout}
 {
-    config.status_codes =
-            std::unordered_set<std::string>{
-                    "200", "201", "204", "301", "302", "307", "400", "401", "403", "500"
-            };
-    config.nb_of_sockets = 700;
-    config.timeout = 10;
 }
+
+dbust::models::Configuration::Builder::Builder() = default;
 
 dbust::models::Configuration::Builder& dbust::models::Configuration::Builder::set_timeout(
         std::size_t new_timeout
@@ -73,7 +77,7 @@ dbust::models::Configuration::Builder& dbust::models::Configuration::Builder::se
 }
 
 dbust::models::Configuration::Builder& dbust::models::Configuration::Builder::set_status_codes(
-        const std::unordered_set<std::string>& new_status_codes
+        const StatusCodes& new_status_codes
 )
 {
     config.status_codes = new_status_codes;

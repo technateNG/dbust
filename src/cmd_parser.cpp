@@ -2,39 +2,40 @@
 #include "exceptions.hpp"
 
 const std::string dbust::models::CmdParser::description
-{
-    "Usage: dbust [OPTION...]\n\n"
-    "-u, --url <string> (*)                                               target url\n"
-    "-d, --dictionary <string> (*)                                        path to dictionary\n"
-    "-s, --sockets <int> (700)                                            number of concurrent sockets\n"
-    "-t, --timeout <int> (10)                                             duration in seconds to reconnect try\n"
-    "-e, --file-extensions <[string]> ()                                  file extensions to search for\n"
-    "-c, --status-codes <[string]> (200, 201, 400, 401, 403, 500)         valid status codes\n"
-    "--user-agent <string> (dbust)                                        request user agent\n"
-    "--get                                                                use GET instead HEAD\n"
-    "-h, --help                                                           this help\n\n"
-    "Examples:\n"
-    "dbust -u https://www.example.com/dir/ -w /home/user/dict.txt\n"
-    "dbust -c '200,201,400,401,403,500' -e 'php,txt' -s 1000 -u http://192.168.0.92:8080/ -w /home/user/dict.txt\n"
-};
+        {
+                "Usage: dbust [OPTION...]\n\n"
+                "-u, --url <string> (*)                                               target url\n"
+                "-d, --dictionary <string> (*)                                        path to dictionary\n"
+                "-s, --sockets <int> (700)                                            number of concurrent sockets\n"
+                "-t, --timeout <int> (10)                                             duration in seconds to reconnect try\n"
+                "-e, --file-extensions <[string]> ()                                  file extensions to search for\n"
+                "-c, --status-codes <[string]> (200, 201, 400, 401, 403, 500)         valid status codes\n"
+                "--user-agent <string> (dbust)                                        request user agent\n"
+                "--get                                                                use GET instead HEAD\n"
+                "-h, --help                                                           this help\n\n"
+                "Examples:\n"
+                "dbust -u https://www.example.com/dir/ -w /home/user/dict.txt\n"
+                "dbust -c '200,201,400,401,403,500' -e 'php,txt' -s 1000 -u http://192.168.0.92:8080/ -w /home/user/dict.txt\n"
+        };
 
-dbust::models::Configuration& dbust::models::CmdParser::parse(int argc, char** argv) {
-    int get{ 0 };
+dbust::models::Configuration& dbust::models::CmdParser::parse(int argc, char** argv)
+{
+    int get{0};
     ::option long_options[]
-    {
-            {"status-codes", required_argument, nullptr, 'c'},
-            {"file-extensions", required_argument, nullptr, 'e'},
-            {"sockets", required_argument, nullptr, 's'},
-            {"dictionary", required_argument, nullptr, 'd'},
-            {"url", required_argument, nullptr, 'u'},
-            {"timeout", required_argument, nullptr, 't'},
-            {"user-agent", required_argument, nullptr, 'a'},
-            {"get", no_argument, &get, 1},
-            {"help", no_argument, nullptr, 'h'}
-    };
-    char c{ '\0' };
-    int option_index{ 0 };
-    std::size_t bitmask{ 0 };
+            {
+                    {"status-codes",    required_argument, nullptr, 'c'},
+                    {"file-extensions", required_argument, nullptr, 'e'},
+                    {"sockets",         required_argument, nullptr, 's'},
+                    {"dictionary",      required_argument, nullptr, 'd'},
+                    {"url",             required_argument, nullptr, 'u'},
+                    {"timeout",         required_argument, nullptr, 't'},
+                    {"user-agent",      required_argument, nullptr, 'a'},
+                    {"get",             no_argument,       &get,    1},
+                    {"help",            no_argument,       nullptr, 'h'}
+            };
+    char c{'\0'};
+    int option_index{0};
+    std::size_t bitmask{0};
     Configuration::Builder builder;
     while ((c = getopt_long(argc, argv, "c:t:e:s:d:u:h", long_options, &option_index)) != -1)
     {
@@ -42,14 +43,14 @@ dbust::models::Configuration& dbust::models::CmdParser::parse(int argc, char** a
         {
             case 'c':
             {
-                auto sc_vec{ parse_delimited_opt(optarg) };
-                std::unordered_set<std::string> sc_set(sc_vec.cbegin(), sc_vec.cend());
-                builder.set_status_codes(sc_set);
+                auto sc_vec{parse_delimited_opt(optarg)};
+                StatusCodes sc(sc_vec.cbegin(), sc_vec.cend());
+                builder.set_status_codes(sc);
                 break;
             }
             case 'e':
             {
-                auto ex_vec{ parse_delimited_opt(optarg) };
+                auto ex_vec{parse_delimited_opt(optarg)};
                 for (auto& ex : ex_vec)
                 {
                     ex.insert(0, 1, '.');
@@ -78,7 +79,9 @@ dbust::models::Configuration& dbust::models::CmdParser::parse(int argc, char** a
             case 'h':
                 std::cout << description << std::endl;
                 std::exit(0);
-            default: {}
+            default:
+            {
+            }
         }
     }
     builder.set_get(get);
@@ -110,8 +113,7 @@ std::vector<std::string> dbust::models::CmdParser::parse_delimited_opt(const cha
         {
             res.push_back(std::move(tmp));
             tmp = "";
-        }
-        else
+        } else
         {
             tmp.push_back(c);
         }
@@ -132,7 +134,7 @@ std::vector<std::string> dbust::models::CmdParser::load_dictionary(const char* f
     {
         std::cerr << "[!] Can't evaluate file size." << std::endl;
     }
-    ::__off_t dict_len { dict_stat.st_size };
+    ::__off_t dict_len{dict_stat.st_size};
     const char* mapped_addr{
             static_cast<const char*>(
                     ::mmap(
@@ -150,30 +152,36 @@ std::vector<std::string> dbust::models::CmdParser::load_dictionary(const char* f
     {
         switch (c)
         {
-            case ' ': {
+            case ' ':
+            {
                 tmp_str += "%20";
                 break;
             }
-            case '#': {
+            case '#':
+            {
                 tmp_str += "%23";
                 break;
             }
-            case '%': {
+            case '%':
+            {
                 tmp_str += "%25";
                 break;
             }
-            case '"': {
+            case '"':
+            {
                 tmp_str += "%22";
                 break;
             }
             case '\r':
                 break;
-            case '\n': {
+            case '\n':
+            {
                 res.push_back(std::move(tmp_str));
                 tmp_str = "";
                 break;
             }
-            default: {
+            default:
+            {
                 tmp_str.push_back(c);
             }
         }
