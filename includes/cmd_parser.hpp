@@ -16,6 +16,6 @@ namespace dbust::models {
         static std::vector<std::string> load_dictionary(const char *file_name);
 
     public:
-        Config parse(int argc, const char *argv[]);
+        Config parse(int argc, const char* argv[]);
     };
 }

@@ -20,15 +20,15 @@ namespace dbust::flavours
 
         SslFlavour& operator=(SslFlavour&& flavour) = delete;
 
-        void connect(dbust::models::Unit& unit, const ::addrinfo& addrinfo) override;
+        int connect(dbust::models::Unit& unit, const ::addrinfo& addrinfo) override;
 
-        void send(dbust::models::Unit& unit, std::string& request) override;
+        int send(dbust::models::Unit& unit, const std::string& request) override;
 
-        void receive(dbust::models::Unit& unit, char* buffer, std::size_t length) override;
+        int receive(dbust::models::Unit& unit, char* buffer, std::size_t length) override;
 
-        void prepare(dbust::models::Unit& unit) override;
+        int prepare(dbust::models::Unit& unit) override;
 
-        void close(dbust::models::Unit& unit) override;
+        int close(dbust::models::Unit& unit) override;
 
         static SslFlavour& instance();
 

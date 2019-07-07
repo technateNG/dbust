@@ -28,7 +28,7 @@ namespace dbust::models
 
         void set_ssl_ptr(::ssl_st* ssl);
 
-        ssl_st* get_ssl_ptr();
+        ::ssl_st* get_ssl_ptr();
 
         int get_file_descriptor();
 
@@ -44,18 +44,18 @@ namespace dbust::models
                 const std::chrono::time_point<std::chrono::system_clock>& time_point
         );
 
-        void set_state(State state);
-
         State get_state() const;
+
+        void set_state(State new_state);
 
         explicit Unit(dbust::flavours::ConnectionFlavour& flavour, int fd);
 
     private:
         dbust::flavours::ConnectionFlavour& flavour;
 
-        ::ssl_st* ssl_ptr{nullptr};
+        ::ssl_st* ssl_ptr{ nullptr };
 
-        State state{State::EMPTY};
+        State state{ State::EMPTY };
 
         int file_descriptor;
 
