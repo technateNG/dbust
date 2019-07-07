@@ -17,14 +17,3 @@ std::string dbust::utils::create_request(std::string& path, dbust::models::Confi
     res += "\r\nAccept: */*\r\n\r\n";
     return res;
 }
-
-bool dbust::utils::is_in_status_codes(
-        const char* buff,
-        const std::unordered_set<std::string>& status_codes)
-{
-    std::string_view buff_view(buff);
-    std::string_view sc{ buff_view.substr(9, 3) };
-    const char* scd = sc.cbegin();
-    int res = status_codes.count(scd);
-    return res;
-}

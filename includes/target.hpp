@@ -14,8 +14,6 @@ namespace dbust::models
 
         bool ssl{false};
 
-        explicit Target(const char* url);
-
     public:
         const std::string& get_host() const;
 
@@ -25,6 +23,6 @@ namespace dbust::models
 
         bool is_ssl() const;
 
-        static const Target& instance(const char* url);
+        explicit Target(const char* url);
     };
 }

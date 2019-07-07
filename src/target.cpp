@@ -11,6 +11,10 @@ dbust::models::Target::Target(const char *url)
             ssl = true;
             eop = 5;
         }
+        if (!(url[eop] == ':' && url[eop + 1] == '/' && url[eop + 2] == '/'))
+        {
+            throw dbust::exceptions::IncorrectUrlException();
+        }
         std::string_view v_url(url);
         std::size_t b_host = eop + 3;
         std::size_t e_host = b_host;
@@ -26,6 +30,14 @@ dbust::models::Target::Target(const char *url)
                 ++e_port;
             }
             port = v_url.substr(b_port + 1, e_port - b_port - 1);
+            try
+            {
+                std::stoi(port);
+            }
+            catch (std::exception& e)
+            {
+                throw dbust::exceptions::IncorrectUrlException();
+            }
         }
         else
         {
@@ -41,12 +53,6 @@ dbust::models::Target::Target(const char *url)
     {
         throw dbust::exceptions::IncorrectUrlException();
     }
-}
-
-const dbust::models::Target& dbust::models::Target::instance(const char* url)
-{
-    static Target target(url);
-    return target;
 }
 
 const std::string& dbust::models::Target::get_host() const

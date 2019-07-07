@@ -67,7 +67,7 @@ dbust::models::Configuration& dbust::models::CmdParser::parse(int argc, char** a
                 bitmask |= 1u << 1u;
                 break;
             case 'u':
-                builder.set_target(Target::instance(::optarg));
+                builder.set_target(Target(::optarg));
                 bitmask |= 1u << 0u;
                 break;
             case 't':
