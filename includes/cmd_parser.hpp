@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
-#include "configuration.hpp"
+#include "config.hpp"
 
 namespace dbust::models {
     class CmdParser {
@@ -16,6 +16,6 @@ namespace dbust::models {
         static std::vector<std::string> load_dictionary(const char *file_name);
 
     public:
-        Configuration &parse(int argc, char *argv[]);
+        Config parse(int argc, const char *argv[]);
     };
 }

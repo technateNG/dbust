@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-int main(int argc, char* argv[])
+int main(const int argc, const char* argv[])
 {
     dbust::models::CmdParser cmd_parser;
     auto config = cmd_parser.parse(argc, argv);

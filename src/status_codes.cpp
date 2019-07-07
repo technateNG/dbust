@@ -9,3 +9,13 @@ bool dbust::models::StatusCodes::contains(const char* str) const
 {
     return raw_sc.count(str);
 }
+
+bool dbust::models::StatusCodes::operator==(const dbust::models::StatusCodes& rhs) const
+{
+    return raw_sc == rhs.raw_sc;
+}
+
+bool dbust::models::StatusCodes::operator!=(const dbust::models::StatusCodes& rhs) const
+{
+    return !(rhs == *this);
+}

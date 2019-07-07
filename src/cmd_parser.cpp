@@ -18,7 +18,7 @@ const std::string dbust::models::CmdParser::description
                 "dbust -c '200,201,400,401,403,500' -e 'php,txt' -s 1000 -u http://192.168.0.92:8080/ -w /home/user/dict.txt\n"
         };
 
-dbust::models::Configuration& dbust::models::CmdParser::parse(int argc, char** argv)
+dbust::models::Config dbust::models::CmdParser::parse(int argc, const char* argv[])
 {
     int get{0};
     ::option long_options[]
@@ -36,8 +36,8 @@ dbust::models::Configuration& dbust::models::CmdParser::parse(int argc, char** a
     char c{'\0'};
     int option_index{0};
     std::size_t bitmask{0};
-    Configuration::Builder builder;
-    while ((c = getopt_long(argc, argv, "c:t:e:s:d:u:h", long_options, &option_index)) != -1)
+    Config config;
+    while ((c = getopt_long(argc, const_cast<char **>(argv), "c:t:e:s:d:u:h", long_options, &option_index)) != -1)
     {
         switch (c)
         {
@@ -45,7 +45,7 @@ dbust::models::Configuration& dbust::models::CmdParser::parse(int argc, char** a
             {
                 auto sc_vec{parse_delimited_opt(optarg)};
                 StatusCodes sc(sc_vec.cbegin(), sc_vec.cend());
-                builder.set_status_codes(sc);
+                config.set_status_codes(sc);
                 break;
             }
             case 'e':
@@ -56,25 +56,25 @@ dbust::models::Configuration& dbust::models::CmdParser::parse(int argc, char** a
                     ex.insert(0, 1, '.');
                 }
                 ex_vec.emplace_back("");
-                builder.set_file_extensions(ex_vec);
+                config.set_file_extensions(ex_vec);
                 break;
             }
             case 's':
-                builder.set_nb_of_sockets(std::stoi(::optarg));
+                config.set_nb_of_sockets(std::stoi(::optarg));
                 break;
             case 'd':
-                builder.set_dictionary(load_dictionary(::optarg));
+                config.set_dictionary(load_dictionary(::optarg));
                 bitmask |= 1u << 1u;
                 break;
             case 'u':
-                builder.set_target(Target(::optarg));
+                config.set_target(Target(::optarg));
                 bitmask |= 1u << 0u;
                 break;
             case 't':
-                builder.set_timeout(std::stoi(::optarg));
+                config.set_timeout(std::stoi(::optarg));
                 break;
             case 'a':
-                builder.set_user_agent(::optarg);
+                config.set_user_agent(::optarg);
                 break;
             case 'h':
                 std::cout << description << std::endl;
@@ -84,11 +84,11 @@ dbust::models::Configuration& dbust::models::CmdParser::parse(int argc, char** a
             }
         }
     }
-    builder.set_get(get);
+    config.set_get(get);
     switch (bitmask)
     {
         case 3:
-            return builder.build();
+            return config;
         case 2:
             throw dbust::exceptions::ArgumentNotSetException("URL");
         case 1:

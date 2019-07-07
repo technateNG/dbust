@@ -1,7 +1,6 @@
 #define CATCH_CONFIG_MAIN
 
 #include <catch2/catch.hpp>
-#include <unordered_set>
 #include "response.hpp"
 #include "status_codes.hpp"
 #include "target.hpp"

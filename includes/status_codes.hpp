@@ -17,5 +17,9 @@ namespace dbust::models
         }
 
         bool contains(const char* str) const;
+
+        bool operator==(const StatusCodes& rhs) const;
+
+        bool operator!=(const StatusCodes& rhs) const;
     };
 }

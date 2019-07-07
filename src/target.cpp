@@ -74,3 +74,5 @@ bool dbust::models::Target::is_ssl() const
 {
     return ssl;
 }
+
+dbust::models::Target::Target() = default;

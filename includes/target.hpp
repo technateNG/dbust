@@ -4,8 +4,11 @@
 
 namespace dbust::models
 {
+    class Config;
     class Target
     {
+        friend class Config;
+
         std::string host;
 
         std::string port;
@@ -13,6 +16,8 @@ namespace dbust::models
         std::string resource_path;
 
         bool ssl{false};
+
+        Target();
 
     public:
         const std::string& get_host() const;

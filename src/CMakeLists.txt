@@ -9,7 +9,7 @@ add_executable(dbust
         ssl_flavour.cpp
         http_flavour.cpp
         unit.cpp
-        configuration.cpp
+        config.cpp
         cmd_parser.cpp
         target.cpp
         exceptions.cpp
@@ -21,7 +21,7 @@ add_library(libdbust
         ssl_flavour.cpp
         http_flavour.cpp
         unit.cpp
-        configuration.cpp
+        config.cpp
         cmd_parser.cpp
         target.cpp
         exceptions.cpp
