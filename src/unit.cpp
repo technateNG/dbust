@@ -95,16 +95,16 @@ std::string& dbust::models::Unit::get_path()
     return path;
 }
 
-const std::chrono::time_point<std::chrono::system_clock>& dbust::models::Unit::get_time_point() const
+const std::chrono::time_point<std::chrono::system_clock>& dbust::models::Unit::get_timeout_tp() const
 {
-    return time_point;
+    return timeout_tp;
 }
 
-void dbust::models::Unit::set_time_point(
-        const std::chrono::time_point<std::chrono::system_clock>& new_time_point
+void dbust::models::Unit::set_timeout_tp(
+        const std::chrono::time_point<std::chrono::system_clock>& time_point
 )
 {
-    time_point = new_time_point;
+    timeout_tp = time_point;
 }
 
 dbust::models::Unit::State dbust::models::Unit::get_state() const
@@ -117,4 +117,13 @@ void dbust::models::Unit::set_state(dbust::models::Unit::State new_state)
     state = new_state;
 }
 
+const std::chrono::time_point<std::chrono::system_clock>& dbust::models::Unit::get_delay_tp() const
+{
+    return delay_tp;
+}
+
+void dbust::models::Unit::set_delay_tp(const std::chrono::time_point<std::chrono::system_clock>& delay_tp)
+{
+    Unit::delay_tp = delay_tp;
+}
 

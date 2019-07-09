@@ -84,10 +84,17 @@ TEST_CASE("Unit class behaves properly", "[Unit]")
         REQUIRE(unit.get_state() == dbust::models::Unit::State::EMPTY);
     }
 
-    SECTION("after intialisation instance should have 0 milis after epoch in timepoint member")
+    SECTION("after intialisation instance should have 0 milis after epoch in timeout_tp member")
     {
         NullFlavour nf(false);
         dbust::models::Unit unit(nf, -1);
-        REQUIRE(unit.get_time_point() == std::chrono::system_clock::from_time_t(0));
+        REQUIRE(unit.get_timeout_tp() == std::chrono::system_clock::from_time_t(0));
+    }
+
+    SECTION("after initialisation instance should have 0 milis after epoch in delay_tp member")
+    {
+        NullFlavour nf(false);
+        dbust::models::Unit unit(nf, -1);
+        REQUIRE(unit.get_delay_tp() == std::chrono::system_clock::from_time_t(0));
     }
 }

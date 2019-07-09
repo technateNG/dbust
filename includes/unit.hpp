@@ -38,11 +38,15 @@ namespace dbust::models
 
         std::string& get_path();
 
-        const std::chrono::time_point<std::chrono::system_clock>& get_time_point() const;
+        const std::chrono::time_point<std::chrono::system_clock>& get_timeout_tp() const;
 
-        void set_time_point(
+        void set_timeout_tp(
                 const std::chrono::time_point<std::chrono::system_clock>& time_point
         );
+
+        const std::chrono::time_point<std::chrono::system_clock>& get_delay_tp() const;
+
+        void set_delay_tp(const std::chrono::time_point<std::chrono::system_clock>& delay_tp);
 
         State get_state() const;
 
@@ -61,6 +65,8 @@ namespace dbust::models
 
         std::string path;
 
-        std::chrono::time_point<std::chrono::system_clock> time_point;
+        std::chrono::time_point<std::chrono::system_clock> timeout_tp;
+
+        std::chrono::time_point<std::chrono::system_clock> delay_tp;
     };
 }

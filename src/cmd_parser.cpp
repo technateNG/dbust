@@ -6,10 +6,11 @@ const std::string dbust::models::CmdParser::description
                 "Usage: dbust [OPTION...]\n\n"
                 "-u, --url <string> (*)                                               target url\n"
                 "-d, --dictionary <string> (*)                                        path to dictionary\n"
-                "-s, --sockets <int> (700)                                            number of concurrent sockets\n"
+                "-s, --sockets <int> (100)                                            number of concurrent sockets\n"
                 "-t, --timeout <int> (10)                                             duration in seconds to reconnect try\n"
                 "-e, --file-extensions <[string]> ()                                  file extensions to search for\n"
                 "-c, --status-codes <[string]> (200, 201, 400, 401, 403, 500)         valid status codes\n"
+                "-y, --delay <int> (100)                                              delay in milis between requests\n"
                 "--user-agent <string> (dbust)                                        request user agent\n"
                 "--get                                                                use GET instead HEAD\n"
                 "-h, --help                                                           this help\n\n"
@@ -29,6 +30,7 @@ dbust::models::Config dbust::models::CmdParser::parse(int argc, const char* argv
                     {"dictionary",      required_argument, nullptr, 'd'},
                     {"url",             required_argument, nullptr, 'u'},
                     {"timeout",         required_argument, nullptr, 't'},
+                    {"delay",           required_argument, nullptr, 'y'},
                     {"user-agent",      required_argument, nullptr, 'a'},
                     {"get",             no_argument,       &get,    1},
                     {"help",            no_argument,       nullptr, 'h'}
@@ -37,7 +39,7 @@ dbust::models::Config dbust::models::CmdParser::parse(int argc, const char* argv
     int option_index{0};
     std::size_t bitmask{0};
     Config config;
-    while ((c = getopt_long(argc, const_cast<char **>(argv), "c:t:e:s:d:u:h", long_options, &option_index)) != -1)
+    while ((c = getopt_long(argc, const_cast<char **>(argv), "y:c:t:e:s:d:u:h", long_options, &option_index)) != -1)
     {
         switch (c)
         {
@@ -75,6 +77,9 @@ dbust::models::Config dbust::models::CmdParser::parse(int argc, const char* argv
                 break;
             case 'a':
                 config.set_user_agent(::optarg);
+                break;
+            case 'y':
+                config.set_delay(std::stoi(::optarg));
                 break;
             case 'h':
                 std::cout << description << std::endl;

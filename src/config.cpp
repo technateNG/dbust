@@ -81,6 +81,16 @@ void dbust::models::Config::set_user_agent(const std::string& new_user_agent)
     Config::user_agent = new_user_agent;
 }
 
+size_t dbust::models::Config::get_delay() const
+{
+    return delay;
+}
+
+void dbust::models::Config::set_delay(size_t delay)
+{
+    Config::delay = delay;
+}
+
 dbust::models::Config::Config() = default;
 
 

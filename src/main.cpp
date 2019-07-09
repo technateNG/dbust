@@ -46,7 +46,8 @@ int main(const int argc, const char* argv[])
             pfd.events = POLLIN | POLLOUT;
             polls.emplace_back(pfd);
         }
-    } else
+    }
+    else
     {
         for (std::size_t i = 0; i < config.get_nb_of_sockets(); ++i)
         {
@@ -82,11 +83,13 @@ int main(const int argc, const char* argv[])
                 if (counter % one_percent == 0)
                 {
                     std::cerr << "[*] " << '(' << counter / one_percent << "%) " <<
-                    counter << '/' << config.get_dictionary().size() << std::endl;
+                              counter << '/' << config.get_dictionary().size() << std::endl;
                 }
                 if (config.get_status_codes().contains(response.get_status_code_ptr()))
                 {
-                    std::cout << unit.get_path() << std::endl;
+                    std::string to_print = unit.get_path();
+                    to_print.insert(0, 1, '/');
+                    std::cout << to_print << std::endl;
                 }
                 unit.close();
                 ++counter;
@@ -94,59 +97,70 @@ int main(const int argc, const char* argv[])
                 pfd.fd = fd;
                 unit.set_file_descriptor(fd);
                 unit.prepare();
-            } else if (
+            }
+            else if (
                     unit.get_state() != dbust::models::Unit::State::SENDED &&
                     pfd.revents & POLLOUT
                     )
             {
-                unit.connect(*dns_result);
-                if (unit.get_state() != dbust::models::Unit::State::DICONNECTED)
+                std::chrono::milliseconds time_diff =
+                        std::chrono::duration_cast<std::chrono::milliseconds>(
+                                std::chrono::system_clock::now() - unit.get_delay_tp());
+                if (time_diff.count() >= config.get_delay())
                 {
-                    if (unit.get_state() != dbust::models::Unit::State::BROKEN)
+                    unit.connect(*dns_result);
+                    if (unit.get_state() != dbust::models::Unit::State::DICONNECTED)
                     {
-                        std::string t_path{config.get_dictionary()[word_ptr]};
-                        t_path += config.get_file_extensions()[ext_pointer];
-                        unit.set_path(t_path);
-                        ++ext_pointer;
-                        if (ext_pointer >= config.get_file_extensions().size())
+                        if (unit.get_state() != dbust::models::Unit::State::BROKEN)
                         {
-                            ext_pointer = 0;
-                            ++word_ptr;
+                            std::string t_path{config.get_dictionary()[word_ptr]};
+                            t_path += config.get_file_extensions()[ext_pointer];
+                            unit.set_path(t_path);
+                            ++ext_pointer;
+                            if (ext_pointer >= config.get_file_extensions().size())
+                            {
+                                ext_pointer = 0;
+                                ++word_ptr;
+                            }
                         }
+                        auto request = dbust::utils::create_request(unit.get_path(), config);
+                        unit.send(request);
+                        unit.set_timeout_tp(std::chrono::system_clock::from_time_t(0));
+                        unit.set_delay_tp(std::chrono::system_clock::now());
                     }
-                    auto request = dbust::utils::create_request(unit.get_path(), config);
-                    unit.send(request);
-                    unit.set_time_point(std::chrono::system_clock::from_time_t(0));
-                } else
-                {
-                    unit.close();
-                    unit.set_time_point(std::chrono::system_clock::from_time_t(0));
-                    int fd = dbust::utils::get_socket(*dns_result);
-                    pfd.fd = fd;
-                    unit.set_file_descriptor(fd);
-                    unit.prepare();
+                    else
+                    {
+                        unit.close();
+                        unit.set_timeout_tp(std::chrono::system_clock::from_time_t(0));
+                        int fd = dbust::utils::get_socket(*dns_result);
+                        pfd.fd = fd;
+                        unit.set_file_descriptor(fd);
+                        unit.prepare();
+                    }
                 }
-            } else
+            }
+            else
             {
-                if (unit.get_time_point().time_since_epoch().count())
+                if (unit.get_timeout_tp().time_since_epoch().count())
                 {
                     std::chrono::duration<double> duration =
-                            std::chrono::system_clock::now() - unit.get_time_point();
+                            std::chrono::system_clock::now() - unit.get_timeout_tp();
                     if (duration.count() > config.get_timeout())
                     {
                         unit.set_state(dbust::models::Unit::State::BROKEN);
                         std::cerr << "[!] Timeout hit for endpoint: " << unit.get_path() <<
                                   " Reconnect issued." << std::endl;
                         unit.close();
-                        unit.set_time_point(std::chrono::system_clock::from_time_t(0));
+                        unit.set_timeout_tp(std::chrono::system_clock::from_time_t(0));
                         int fd = dbust::utils::get_socket(*dns_result);
                         pfd.fd = fd;
                         unit.set_file_descriptor(fd);
                         unit.prepare();
                     }
-                } else
+                }
+                else
                 {
-                    unit.set_time_point(std::chrono::system_clock::now());
+                    unit.set_timeout_tp(std::chrono::system_clock::now());
                 }
             }
         }

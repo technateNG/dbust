@@ -17,13 +17,15 @@ namespace dbust::models
 
         Target target;
 
-        std::size_t nb_of_sockets{ 1 };
+        std::size_t nb_of_sockets{ 100 };
 
         std::size_t timeout{ 10 };
 
         bool get{ false };
 
         std::string user_agent{ "dbust" };
+
+        std::size_t delay{ 100 };
 
     public:
         Config();
@@ -52,12 +54,16 @@ namespace dbust::models
 
         void set_target(const Target& target);
 
-        void set_nb_of_sockets(size_t nb_of_sockets);
+        void set_nb_of_sockets(std::size_t nb_of_sockets);
 
-        void set_timeout(size_t timeout);
+        void set_timeout(std::size_t timeout);
 
         void set_get(bool get);
 
         void set_user_agent(const std::string& user_agent);
+
+        std::size_t get_delay() const;
+
+        void set_delay(std::size_t delay);
     };
 }
