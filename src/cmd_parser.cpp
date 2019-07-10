@@ -1,5 +1,4 @@
 #include "cmd_parser.hpp"
-#include "exceptions.hpp"
 
 const std::string dbust::models::CmdParser::description
         {
@@ -45,14 +44,14 @@ dbust::models::Config dbust::models::CmdParser::parse(int argc, const char* argv
         {
             case 'c':
             {
-                auto sc_vec{parse_delimited_opt(optarg)};
+                auto sc_vec{parser.parse(optarg)};
                 StatusCodes sc(sc_vec.cbegin(), sc_vec.cend());
                 config.set_status_codes(sc);
                 break;
             }
             case 'e':
             {
-                auto ex_vec{parse_delimited_opt(optarg)};
+                auto ex_vec{parser.parse(optarg)};
                 for (auto& ex : ex_vec)
                 {
                     ex.insert(0, 1, '.');
@@ -65,7 +64,7 @@ dbust::models::Config dbust::models::CmdParser::parse(int argc, const char* argv
                 config.set_nb_of_sockets(std::stoi(::optarg));
                 break;
             case 'd':
-                config.set_dictionary(load_dictionary(::optarg));
+                config.set_dictionary(reader.read_dictionary(::optarg));
                 bitmask |= 1u << 1u;
                 break;
             case 'u':
@@ -105,91 +104,7 @@ dbust::models::Config dbust::models::CmdParser::parse(int argc, const char* argv
     }
 }
 
-
-std::vector<std::string> dbust::models::CmdParser::parse_delimited_opt(const char* opt)
+dbust::models::CmdParser::CmdParser(const dbust::models::DictionaryReader& d_reader,
+                                    const dbust::models::BatchOptParser& parser) : reader{ d_reader }, parser{ parser }
 {
-    std::string_view r_opt(opt);
-    auto f_opt = r_opt.substr(1, r_opt.length() - 2);
-    std::vector<std::string> res;
-    std::string tmp;
-    for (const char c : f_opt)
-    {
-        if (c == ',')
-        {
-            res.push_back(std::move(tmp));
-            tmp = "";
-        } else
-        {
-            tmp.push_back(c);
-        }
-    }
-    res.push_back(tmp);
-    return res;
-}
-
-std::vector<std::string> dbust::models::CmdParser::load_dictionary(const char* file_name)
-{
-    int fd = ::open(file_name, O_RDONLY);
-    if (fd < 0)
-    {
-        std::cerr << "[!] Can't open file." << std::endl;
-    }
-    struct ::stat dict_stat{};
-    if (fstat(fd, &dict_stat) < 0)
-    {
-        std::cerr << "[!] Can't evaluate file size." << std::endl;
-    }
-    ::__off_t dict_len{dict_stat.st_size};
-    const char* mapped_addr{
-            static_cast<const char*>(
-                    ::mmap(
-                            nullptr,
-                            dict_len,
-                            PROT_READ,
-                            MAP_PRIVATE,
-                            fd,
-                            0u))
-    };
-    std::string_view view(mapped_addr, dict_len);
-    std::vector<std::string> res;
-    std::string tmp_str;
-    for (auto& c : view)
-    {
-        switch (c)
-        {
-            case ' ':
-            {
-                tmp_str += "%20";
-                break;
-            }
-            case '#':
-            {
-                tmp_str += "%23";
-                break;
-            }
-            case '%':
-            {
-                tmp_str += "%25";
-                break;
-            }
-            case '"':
-            {
-                tmp_str += "%22";
-                break;
-            }
-            case '\r':
-                break;
-            case '\n':
-            {
-                res.push_back(std::move(tmp_str));
-                tmp_str = "";
-                break;
-            }
-            default:
-            {
-                tmp_str.push_back(c);
-            }
-        }
-    }
-    return res;
 }

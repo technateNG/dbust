@@ -2,20 +2,22 @@
 
 #include <iostream>
 #include <getopt.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <fcntl.h>
 #include "config.hpp"
+#include "dictionary_reader.hpp"
+#include "batch_opt_parser.hpp"
+#include "exceptions.hpp"
 
 namespace dbust::models {
     class CmdParser {
         static const std::string description;
 
-        static std::vector<std::string> parse_delimited_opt(const char *opt);
+        const DictionaryReader& reader;
 
-        static std::vector<std::string> load_dictionary(const char *file_name);
+        const BatchOptParser& parser;
 
     public:
+        CmdParser(const DictionaryReader& d_reader, const BatchOptParser& parser);
+
         Config parse(int argc, const char* argv[]);
     };
 }

@@ -1,25 +1,52 @@
 #include <catch2/catch.hpp>
 #include "cmd_parser.hpp"
 
+struct NullDictionaryReader : public dbust::models::DictionaryReader
+{
+    std::vector<std::string> read_dictionary(const char* path) const override
+    {
+        return std::vector<std::string>();
+    }
+};
+
 TEST_CASE("CmdParser should function properly", "[CmdParser]")
 {
-    dbust::models::CmdParser parser;
-    int c_argc{7};
-    const char* c_argv[]
+    NullDictionaryReader nr;
+    dbust::models::BatchOptParser bop;
+    dbust::models::CmdParser cmd_parser(nr, bop);
+
+    int m_argc{ 16 };
+    const char* m_argv[]
             {
                     "/home/foo/dbust",
-                    "-s",
+                    "--sockets",
                     "1",
-                    "-u",
+                    "--url",
                     "http://www.example.com/",
-                    "-d",
+                    "--dictionary",
                     "/home/foo/dict",
-                    "-c '200,201'"
+                    "-c",
+                    "'200,201'",
+                    "-y",
+                    "200",
+                    "--timeout",
+                    "12",
+                    "--get",
+                    "--user-agent",
+                    "foobar"
             };
 
-    SECTION("CmdParser should return correrct Config instance")
+    SECTION("should return correct Config instance from opts")
     {
-  //      dbust::models::Config config = parser.parse(c_argc, c_argv);
- //       REQUIRE(config.get_status_codes() == dbust::models::StatusCodes{ "200", "201" });
+        dbust::models::Config config = cmd_parser.parse(m_argc, m_argv);
+        REQUIRE(config.get_status_codes() == dbust::models::StatusCodes{ "200", "201" });
+        REQUIRE(config.get_nb_of_sockets() == 1);
+        REQUIRE(config.get_delay() == 200);
+        REQUIRE(config.get_target().get_host() == "www.example.com");
+        REQUIRE(config.get_target().get_port() == "80");
+        REQUIRE_FALSE(config.get_target().is_ssl());
+        REQUIRE(config.get_timeout() == 12);
+        REQUIRE(config.is_get());
+        REQUIRE(config.get_user_agent() == "foobar");
     }
 }

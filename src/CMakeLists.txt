@@ -15,7 +15,9 @@ add_executable(dbust
         exceptions.cpp
         utils.cpp
         status_codes.cpp
-        response.cpp)
+        response.cpp
+        dictionary_reader.cpp
+        batch_opt_parser.cpp)
 
 add_library(libdbust
         ssl_flavour.cpp
@@ -27,6 +29,8 @@ add_library(libdbust
         exceptions.cpp
         utils.cpp
         status_codes.cpp
-        response.cpp)
+        response.cpp
+        dictionary_reader.cpp
+        batch_opt_parser.cpp)
 
 target_link_libraries(dbust OpenSSL::SSL)

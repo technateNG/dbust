@@ -2,7 +2,9 @@
 
 int main(const int argc, const char* argv[])
 {
-    dbust::models::CmdParser cmd_parser;
+    dbust::models::MMapDictionaryReader mmap_d_read;
+    dbust::models::BatchOptParser batch_opt_parser;
+    dbust::models::CmdParser cmd_parser(mmap_d_read, batch_opt_parser);
     auto config = cmd_parser.parse(argc, argv);
     ::addrinfo hints{};
     hints.ai_family = AF_UNSPEC;
