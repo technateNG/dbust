@@ -1,6 +1,6 @@
 #include "batch_opt_parser.hpp"
 
-std::vector<std::string> dbust::models::BatchOptParser::parse(const char* opt) const
+std::vector<std::string> dbust::BatchOptParser::parse(const char* opt) const
 {
     std::string_view r_opt(opt);
     auto f_opt =

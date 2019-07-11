@@ -1,7 +1,7 @@
 #include <fcntl.h>
 #include "dictionary_reader.hpp"
 
-std::vector<std::string> dbust::models::MMapDictionaryReader::read_dictionary(const char* path) const
+std::vector<std::string> dbust::MMapDictionaryReader::read_dictionary(const char* path) const
 {
     int fd = ::open(path, O_RDONLY);
     if (fd < 0)

@@ -1,6 +1,6 @@
 #include "cmd_parser.hpp"
 
-const std::string dbust::models::CmdParser::description
+const std::string dbust::CmdParser::description
         {
                 "Usage: dbust [OPTION...]\n\n"
                 "-u, --url <string> (*)                                               target url\n"
@@ -18,7 +18,7 @@ const std::string dbust::models::CmdParser::description
                 "dbust -c '200,201,400,401,403,500' -e 'php,txt' -s 1000 -u http://192.168.0.92:8080/ -w /home/user/dict.txt\n"
         };
 
-dbust::models::Config dbust::models::CmdParser::parse(int argc, const char* argv[])
+dbust::Config dbust::CmdParser::parse(int argc, const char* argv[])
 {
     int get{0};
     ::option long_options[]
@@ -94,17 +94,17 @@ dbust::models::Config dbust::models::CmdParser::parse(int argc, const char* argv
         case 3:
             return config;
         case 2:
-            throw dbust::exceptions::ArgumentNotSetException("URL");
+            throw dbust::ArgumentNotSetException("URL");
         case 1:
-            throw dbust::exceptions::ArgumentNotSetException("Dictionary");
+            throw dbust::ArgumentNotSetException("Dictionary");
         case 0:
-            throw dbust::exceptions::ArgumentNotSetException("URL, Dictionary");
+            throw dbust::ArgumentNotSetException("URL, Dictionary");
         default:
-            throw dbust::exceptions::UnexpectedException();
+            throw dbust::UnexpectedException();
     }
 }
 
-dbust::models::CmdParser::CmdParser(const dbust::models::DictionaryReader& d_reader,
-                                    const dbust::models::BatchOptParser& parser) : reader{ d_reader }, parser{ parser }
+dbust::CmdParser::CmdParser(const dbust::DictionaryReader& d_reader,
+                                    const dbust::BatchOptParser& parser) : reader{ d_reader }, parser{ parser }
 {
 }

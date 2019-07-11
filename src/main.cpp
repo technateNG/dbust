@@ -2,9 +2,9 @@
 
 int main(const int argc, const char* argv[])
 {
-    dbust::models::MMapDictionaryReader mmap_d_read;
-    dbust::models::BatchOptParser batch_opt_parser;
-    dbust::models::CmdParser cmd_parser(mmap_d_read, batch_opt_parser);
+    dbust::MMapDictionaryReader mmap_d_read;
+    dbust::BatchOptParser batch_opt_parser;
+    dbust::CmdParser cmd_parser(mmap_d_read, batch_opt_parser);
     auto config = cmd_parser.parse(argc, argv);
     ::addrinfo hints{};
     hints.ai_family = AF_UNSPEC;
@@ -25,7 +25,7 @@ int main(const int argc, const char* argv[])
 
     std::vector<pollfd> polls;
     polls.reserve(config.get_nb_of_sockets());
-    std::vector<dbust::models::Unit> units;
+    std::vector<dbust::Unit> units;
     units.reserve(config.get_nb_of_sockets());
     ::SSL_CTX* ctx{nullptr};
     if (config.get_target().is_ssl())
@@ -36,9 +36,9 @@ int main(const int argc, const char* argv[])
         ctx = ::SSL_CTX_new(TLS_client_method());
         for (std::size_t i = 0; i < config.get_nb_of_sockets(); ++i)
         {
-            dbust::models::Unit unit(
-                    dbust::flavours::SslFlavour::instance(),
-                    dbust::utils::get_socket(*dns_result)
+            dbust::Unit unit(
+                    dbust::SslFlavour::instance(),
+                    dbust::get_socket(*dns_result)
             );
             unit.set_ssl_ptr(::SSL_new(ctx));
             unit.prepare();
@@ -53,9 +53,9 @@ int main(const int argc, const char* argv[])
     {
         for (std::size_t i = 0; i < config.get_nb_of_sockets(); ++i)
         {
-            dbust::models::Unit unit(
-                    dbust::flavours::HttpFlavour::instance(),
-                    dbust::utils::get_socket(*dns_result)
+            dbust::Unit unit(
+                    dbust::HttpFlavour::instance(),
+                    dbust::get_socket(*dns_result)
             );
             unit.prepare();
             units.emplace_back(unit);
@@ -76,12 +76,12 @@ int main(const int argc, const char* argv[])
         for (std::size_t i = 0; i < polls.size(); ++i)
         {
             ::pollfd& pfd = polls.at(i);
-            dbust::models::Unit& unit = units.at(i);
-            if (unit.get_state() == dbust::models::Unit::State::SENDED && pfd.revents & POLLIN)
+            dbust::Unit& unit = units.at(i);
+            if (unit.get_state() == dbust::Unit::State::SENDED && pfd.revents & POLLIN)
             {
                 char buff[13]{'\0'};
                 unit.receive(buff, 12);
-                dbust::models::Response response(buff);
+                dbust::Response response(buff);
                 if (counter % one_percent == 0)
                 {
                     std::cerr << "[*] " << '(' << counter / one_percent << "%) " <<
@@ -95,13 +95,13 @@ int main(const int argc, const char* argv[])
                 }
                 unit.close();
                 ++counter;
-                int fd = dbust::utils::get_socket(*dns_result);
+                int fd = dbust::get_socket(*dns_result);
                 pfd.fd = fd;
                 unit.set_file_descriptor(fd);
                 unit.prepare();
             }
             else if (
-                    unit.get_state() != dbust::models::Unit::State::SENDED &&
+                    unit.get_state() != dbust::Unit::State::SENDED &&
                     pfd.revents & POLLOUT
                     )
             {
@@ -111,9 +111,9 @@ int main(const int argc, const char* argv[])
                 if (time_diff.count() >= config.get_delay())
                 {
                     unit.connect(*dns_result);
-                    if (unit.get_state() != dbust::models::Unit::State::DICONNECTED)
+                    if (unit.get_state() != dbust::Unit::State::DICONNECTED)
                     {
-                        if (unit.get_state() != dbust::models::Unit::State::BROKEN)
+                        if (unit.get_state() != dbust::Unit::State::BROKEN)
                         {
                             std::string t_path{config.get_dictionary()[word_ptr]};
                             t_path += config.get_file_extensions()[ext_pointer];
@@ -125,7 +125,7 @@ int main(const int argc, const char* argv[])
                                 ++word_ptr;
                             }
                         }
-                        auto request = dbust::utils::create_request(unit.get_path(), config);
+                        auto request = dbust::create_request(unit.get_path(), config);
                         unit.send(request);
                         unit.set_timeout_tp(std::chrono::system_clock::from_time_t(0));
                         unit.set_delay_tp(std::chrono::system_clock::now());
@@ -134,7 +134,7 @@ int main(const int argc, const char* argv[])
                     {
                         unit.close();
                         unit.set_timeout_tp(std::chrono::system_clock::from_time_t(0));
-                        int fd = dbust::utils::get_socket(*dns_result);
+                        int fd = dbust::get_socket(*dns_result);
                         pfd.fd = fd;
                         unit.set_file_descriptor(fd);
                         unit.prepare();
@@ -149,12 +149,12 @@ int main(const int argc, const char* argv[])
                             std::chrono::system_clock::now() - unit.get_timeout_tp();
                     if (duration.count() > config.get_timeout())
                     {
-                        unit.set_state(dbust::models::Unit::State::BROKEN);
+                        unit.set_state(dbust::Unit::State::BROKEN);
                         std::cerr << "[!] Timeout hit for endpoint: " << unit.get_path() <<
                                   " Reconnect issued." << std::endl;
                         unit.close();
                         unit.set_timeout_tp(std::chrono::system_clock::from_time_t(0));
-                        int fd = dbust::utils::get_socket(*dns_result);
+                        int fd = dbust::get_socket(*dns_result);
                         pfd.fd = fd;
                         unit.set_file_descriptor(fd);
                         unit.prepare();

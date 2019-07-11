@@ -1,16 +1,16 @@
 #include "ssl_flavour.hpp"
 #include "unit.hpp"
 
-dbust::flavours::SslFlavour::SslFlavour() = default;
+dbust::SslFlavour::SslFlavour() = default;
 
-int dbust::flavours::SslFlavour::prepare(dbust::models::Unit& unit)
+int dbust::SslFlavour::prepare(dbust::Unit& unit)
 {
     SSL_set_fd(unit.get_ssl_ptr(), unit.get_file_descriptor());
     return 0;
 }
 
-int dbust::flavours::SslFlavour::connect(
-        dbust::models::Unit& unit,
+int dbust::SslFlavour::connect(
+        dbust::Unit& unit,
         const ::addrinfo& addrinfo
 )
 {
@@ -31,8 +31,8 @@ int dbust::flavours::SslFlavour::connect(
     return 0;
 }
 
-int dbust::flavours::SslFlavour::send(
-        dbust::models::Unit& unit,
+int dbust::SslFlavour::send(
+        dbust::Unit& unit,
         const std::string& request
 )
 {
@@ -44,8 +44,8 @@ int dbust::flavours::SslFlavour::send(
     return 0;
 }
 
-int dbust::flavours::SslFlavour::receive(
-        dbust::models::Unit& unit,
+int dbust::SslFlavour::receive(
+        dbust::Unit& unit,
         char* buffer,
         const std::size_t length
 )
@@ -58,13 +58,13 @@ int dbust::flavours::SslFlavour::receive(
     return 0;
 }
 
-dbust::flavours::SslFlavour& dbust::flavours::SslFlavour::instance()
+dbust::SslFlavour& dbust::SslFlavour::instance()
 {
     static SslFlavour flavour;
     return flavour;
 }
 
-int dbust::flavours::SslFlavour::close(dbust::models::Unit& unit)
+int dbust::SslFlavour::close(dbust::Unit& unit)
 {
     ::SSL_shutdown(unit.get_ssl_ptr());
     ::SSL_clear(unit.get_ssl_ptr());

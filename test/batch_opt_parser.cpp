@@ -16,7 +16,7 @@ bool contains(T pattern, std::vector<T>& vec)
 
 TEST_CASE("BatchOptParser", "[BatchOptParser]")
 {
-    dbust::models::BatchOptParser bop;
+    dbust::BatchOptParser bop;
     std::string a = "foo,bar,zar";
     std::string b = "\"foo,bar,zar\"";
     std::string c = "\'foo,bar,zar\'";

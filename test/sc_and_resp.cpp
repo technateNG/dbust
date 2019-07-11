@@ -9,11 +9,11 @@
 
 TEST_CASE("StatusCodes and Response should cooperate to get correct match", "[Request,StatusCodes]")
 {
-    dbust::models::StatusCodes sc { "200", "201" };
+    dbust::StatusCodes sc { "200", "201" };
     const char c_buff[13] = "HTTP/1.1 200";
     const char b_buff[13] = "HTTP/1.1 404";
-    dbust::models::Response c_resp(c_buff);
-    dbust::models::Response b_resp(b_buff);
+    dbust::Response c_resp(c_buff);
+    dbust::Response b_resp(b_buff);
 
     SECTION("StatusCodes.contains should return correct value")
     {

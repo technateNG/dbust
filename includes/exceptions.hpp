@@ -3,7 +3,7 @@
 #include <string>
 #include <exception>
 
-namespace dbust::exceptions {
+namespace dbust {
     struct IncorrectUrlException : public std::exception {
         const char *what() const noexcept override;
     };

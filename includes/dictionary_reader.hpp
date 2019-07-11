@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-namespace dbust::models
+namespace dbust
 {
     struct DictionaryReader
     {

@@ -6,7 +6,7 @@
 #include <openssl/err.h>
 #include "connection_flavour.hpp"
 
-namespace dbust::flavours
+namespace dbust
 {
     struct SslFlavour : public ConnectionFlavour
     {
@@ -20,15 +20,15 @@ namespace dbust::flavours
 
         SslFlavour& operator=(SslFlavour&& flavour) = delete;
 
-        int connect(dbust::models::Unit& unit, const ::addrinfo& addrinfo) override;
+        int connect(dbust::Unit& unit, const ::addrinfo& addrinfo) override;
 
-        int send(dbust::models::Unit& unit, const std::string& request) override;
+        int send(dbust::Unit& unit, const std::string& request) override;
 
-        int receive(dbust::models::Unit& unit, char* buffer, std::size_t length) override;
+        int receive(dbust::Unit& unit, char* buffer, std::size_t length) override;
 
-        int prepare(dbust::models::Unit& unit) override;
+        int prepare(dbust::Unit& unit) override;
 
-        int close(dbust::models::Unit& unit) override;
+        int close(dbust::Unit& unit) override;
 
         static SslFlavour& instance();
 

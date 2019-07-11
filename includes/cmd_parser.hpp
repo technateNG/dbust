@@ -7,7 +7,7 @@
 #include "batch_opt_parser.hpp"
 #include "exceptions.hpp"
 
-namespace dbust::models {
+namespace dbust {
     class CmdParser {
         static const std::string description;
 

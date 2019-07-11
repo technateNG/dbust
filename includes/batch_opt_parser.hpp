@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-namespace dbust::models
+namespace dbust
 {
     struct BatchOptParser
     {

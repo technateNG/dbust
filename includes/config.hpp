@@ -5,7 +5,7 @@
 #include "target.hpp"
 #include "status_codes.hpp"
 
-namespace dbust::models
+namespace dbust
 {
     class Config
     {

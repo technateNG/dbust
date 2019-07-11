@@ -2,7 +2,7 @@
 
 #include <unordered_set>
 
-namespace dbust::models
+namespace dbust
 {
     class StatusCodes
     {

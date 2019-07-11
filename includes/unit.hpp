@@ -4,7 +4,7 @@
 #include "ssl_flavour.hpp"
 
 
-namespace dbust::models
+namespace dbust
 {
     struct Unit
     {
@@ -52,10 +52,10 @@ namespace dbust::models
 
         void set_state(State new_state);
 
-        explicit Unit(dbust::flavours::ConnectionFlavour& flavour, int fd);
+        explicit Unit(dbust::ConnectionFlavour& flavour, int fd);
 
     private:
-        dbust::flavours::ConnectionFlavour& flavour;
+        dbust::ConnectionFlavour& flavour;
 
         ::ssl_st* ssl_ptr{ nullptr };
 

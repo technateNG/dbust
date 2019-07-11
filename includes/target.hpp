@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace dbust::models
+namespace dbust
 {
     class Config;
     class Target
