@@ -14,8 +14,8 @@ const std::string dbust::CmdParser::description
                 "--get                                                                use GET instead HEAD\n"
                 "-h, --help                                                           this help\n\n"
                 "Examples:\n"
-                "dbust -u https://www.example.com/dir/ -w /home/user/dict.txt\n"
-                "dbust -c '200,201,400,401,403,500' -e 'php,txt' -s 1000 -u http://192.168.0.92:8080/ -w /home/user/dict.txt\n"
+                "dbust -u https://www.example.com/dir/ -d /home/user/dict.txt\n"
+                "dbust -c '200,201,400,401,403,500' -e 'php,txt' -s 1000 -u http://192.168.0.92:8080/ -d /home/user/dict.txt\n"
         };
 
 dbust::Config dbust::CmdParser::parse(int argc, const char* argv[])
