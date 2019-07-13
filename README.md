@@ -1,18 +1,17 @@
-# dbust
+# ![dbust logo](images/dbust2.png) dbust
 Dbust is a directory busting tool.
 
-Main purpouse is to discover implict pages by brute-forcing website URI's.
+Tool purpouse is to discover implict pages by brute-forcing website URI's.
 
-## Main features:
-* ultra-fast (4k requests/sec is achievable, it's written in C++ and with nonblocking sockets)
+## ![dbust logo](images/dbust2.png) Main features:
+* ultra-fast (written in C++, nonblocking sockets, poll)
 * HEAD request by default
 * reconnecting (don't lost tries)
 * no more "too much files opened" error
-* with control (you preciesly choose how much connections you want)
 * low memory footprint
 * maintained;)
 
-## Instalation
+## ![dbust logo](images/dbust2.png) Instalation
 Compiled dbust is a single ELF executable. It's developed and build on linux and with linux in mind.
 But because project uses unix sockets and poll standard - it's possible that with minor changes, 
 solution can be compiled and working on other unixes.
@@ -23,7 +22,7 @@ Dbust only dependency is OpenSSL which almost every Linux distribution has insta
 ### Released Binaries
 In releases section on github are shipped binaries with working lastest stable version.
 
-## Do It Yourself
+## ![dbust logo](images/dbust2.png) Do It Yourself
 Compilation is actually very easy:
 
 ```
@@ -33,7 +32,7 @@ make
 ```
 After some time compilation should succeed. Executable is in src directory.
 
-## Tips
+## ![dbust logo](images/dbust2.png) Tips
 Dbust is really, really fast and have some catches.  
 Executable by default have enabled 100 sockets and delay set on 100 miliseconds. 
 This setup should give reasonable speed which doesn't alarm every security solution. But there are scenarios where 
@@ -56,7 +55,26 @@ For max speed on HTTPS you should set:
 ```
 --delay 0 --sockets 400
 ```
-## Examples
+## ![dbust logo](images/dbust2.png) Examples
+Help:
+```
+Usage: dbust [OPTION...]
+
+-u, --url <string> (*)                                               target url
+-d, --dictionary <string> (*)                                        path to dictionary
+-s, --sockets <int> (100)                                            number of concurrent sockets
+-t, --timeout <int> (10)                                             duration in seconds to reconnect try
+-e, --file-extensions <[string]> ()                                  file extensions to search for
+-c, --status-codes <[string]> (200, 201, 400, 401, 403, 500)         valid status codes
+-y, --delay <int> (100)                                              delay in milis between requests
+--user-agent <string> (dbust)                                        request user agent
+--get                                                                use GET instead HEAD
+-h, --help                                                           this help
+
+Examples:
+dbust -u https://www.example.com/dir/ -d /home/user/dict.txt
+dbust -c '200,201,400,401,403,500' -e 'php,txt' -s 1000 -u http://192.168.0.92:8080/ -d /home/user/dict.txt
+```
 Local HTTP busting:
 ```
 ./dbust --url http://192.168.122.134 --dictionary /home/user/Downloads/DirBuster-Lists/directory-list-2.3-small.txt
@@ -112,3 +130,5 @@ Output:
 [*] (7%) 6132/87664
 [*] (8%) 7008/87664
 ```
+## ![dbust logo](images/dbust2.png) Licence
+This application is open sourced under GNU Public Licence ver. 3.
