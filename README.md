@@ -1,4 +1,4 @@
-# ![dbust logo](images/dbust2.png) dbust
+# ![dbust logo](images/dbust2.png) dbust 0.1
 Dbust is a directory busting tool.
 
 Tool purpouse is to discover implict pages by brute-forcing website URI's.
@@ -27,10 +27,17 @@ Compilation is actually very easy:
 
 ```
 git clone https://github.com/technateNG/dbust && cd dbust
-cmake .
+cmake --config release .
 make
 ```
 After some time compilation should succeed. Executable is in src directory.
+
+If you want contributing in project than you should compile tests as well.
+To do that you need this options set:
+```
+cmake --config debug -DDEV=ON .
+```
+And that's all.
 
 ## ![dbust logo](images/dbust2.png) Tips
 Dbust is really, really fast and have some catches.  
@@ -130,5 +137,10 @@ Output:
 [*] (7%) 6132/87664
 [*] (8%) 7008/87664
 ```
+## ![dbust logo](images/dbust2.png) In future:
+* Cleaner code and better tests coverage
+* Multithreading support
+* Recursive search
+
 ## ![dbust logo](images/dbust2.png) Licence
 This application is open sourced under GNU Public Licence ver. 3.
