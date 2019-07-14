@@ -5,7 +5,8 @@ int main(const int argc, const char* argv[])
     dbust::MMapDictionaryReader mmap_d_read;
     dbust::BatchOptParser batch_opt_parser;
     dbust::CmdParser cmd_parser(mmap_d_read, batch_opt_parser);
-    auto config = cmd_parser.parse(argc, argv);
+    dbust::Config config = cmd_parser.parse(argc, argv);
+
     ::addrinfo hints{};
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -28,6 +29,7 @@ int main(const int argc, const char* argv[])
     std::vector<dbust::Unit> units;
     units.reserve(config.get_nb_of_sockets());
     ::SSL_CTX* ctx{nullptr};
+
     if (config.get_target().is_ssl())
     {
         ::SSL_library_init();

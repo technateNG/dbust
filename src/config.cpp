@@ -86,7 +86,7 @@ size_t dbust::Config::get_delay() const
     return delay;
 }
 
-void dbust::Config::set_delay(size_t delay)
+void dbust::Config::set_delay(std::size_t delay)
 {
     Config::delay = delay;
 }

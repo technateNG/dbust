@@ -15,7 +15,7 @@ const std::string dbust::CmdParser::description
                 "-h, --help                                                           this help\n\n"
                 "Examples:\n"
                 "dbust -u https://www.example.com/dir/ -d /home/user/dict.txt\n"
-                "dbust -c '200,201,400,401,403,500' -e 'php,txt' -s 1000 -u http://192.168.0.92:8080/ -d /home/user/dict.txt\n"
+                "dbust -c '200,201,400,401,403,500' -e 'php,txt' -s 1000 -u http://192.168.0.92:8080/ -d /home/user/dict.txt"
         };
 
 dbust::Config dbust::CmdParser::parse(int argc, const char* argv[])
@@ -94,11 +94,17 @@ dbust::Config dbust::CmdParser::parse(int argc, const char* argv[])
         case 3:
             return config;
         case 2:
-            throw dbust::ArgumentNotSetException("URL");
+            std::cerr << "[!] Required argument not set: URL." << std::endl;
+            std::cout << description;
+            std::exit(1);
         case 1:
-            throw dbust::ArgumentNotSetException("Dictionary");
+            std::cerr << "[!] Required argument not set: Dictionary." << std::endl;
+            std::cout << description;
+            std::exit(1);
         case 0:
-            throw dbust::ArgumentNotSetException("URL, Dictionary");
+            std::cerr << "[!] Required arguments aren't set: URL, Dictionary." << std::endl;
+            std::cout << description;
+            std::exit(1);
         default:
             throw dbust::UnexpectedException();
     }
