@@ -1,11 +1,14 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.10.2)
 
 project(dbust LANGUAGES CXX VERSION 0.1)
+
+option(DEV "Enable development and tests compilation." OFF)
 
 include_directories(includes)
 
 add_subdirectory(src)
 
-enable_testing()
-add_subdirectory(test)
-add_test(NAME dbust_tests COMMAND test)
+if(DEV)
+    enable_testing()
+    add_subdirectory(test)
+endif()

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.10.2)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -19,6 +19,7 @@ add_executable(dbust
         dictionary_reader.cpp
         batch_opt_parser.cpp)
 
+if(DEV)
 add_library(libdbust
         ssl_flavour.cpp
         http_flavour.cpp
@@ -32,5 +33,6 @@ add_library(libdbust
         response.cpp
         dictionary_reader.cpp
         batch_opt_parser.cpp)
+endif()
 
 target_link_libraries(dbust OpenSSL::SSL)
