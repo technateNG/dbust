@@ -28,6 +28,6 @@ namespace dbust
 
         bool is_ssl() const;
 
-        explicit Target(const char* url);
+        static Target parse_url(const char* url);
     };
 }

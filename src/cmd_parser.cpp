@@ -68,9 +68,12 @@ dbust::Config dbust::CmdParser::parse(int argc, const char* argv[])
                 bitmask |= 1u << 1u;
                 break;
             case 'u':
-                config.set_target(Target(::optarg));
+            {
+                auto target = Target::parse_url(::optarg);
+                config.set_target(target);
                 bitmask |= 1u << 0u;
                 break;
+            }
             case 't':
                 config.set_timeout(std::stoi(::optarg));
                 break;
@@ -94,17 +97,11 @@ dbust::Config dbust::CmdParser::parse(int argc, const char* argv[])
         case 3:
             return config;
         case 2:
-            std::cerr << "[!] Required argument not set: URL." << std::endl;
-            std::cout << description;
-            std::exit(1);
+            throw dbust::ArgumentNotSetException("URL");
         case 1:
-            std::cerr << "[!] Required argument not set: Dictionary." << std::endl;
-            std::cout << description;
-            std::exit(1);
+            throw dbust::ArgumentNotSetException("Dictionary");
         case 0:
-            std::cerr << "[!] Required arguments aren't set: URL, Dictionary." << std::endl;
-            std::cout << description;
-            std::exit(1);
+            throw dbust::ArgumentNotSetException("URL, Dictionary");
         default:
             throw dbust::UnexpectedException();
     }
