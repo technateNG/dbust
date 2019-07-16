@@ -1,26 +1,22 @@
 # ![dbust logo](images/dbust2.png) dbust 0.1
-Dbust is a directory busting tool.
-
-Tool purpouse is to discover implict pages by brute-forcing website URI's.
+Discover implict pages by brute-forcing website URI's.
 
 ## ![dbust logo](images/dbust2.png) Main features:
 * ultra-fast (written in C++, nonblocking sockets, poll)
 * HEAD request by default
-* reconnecting (don't lost tries)
+* reconnecting until succeeds 
 * no more "too much files opened" error
 * low memory footprint
 * maintained;)
 
 ## ![dbust logo](images/dbust2.png) Instalation
-Compiled dbust is a single ELF executable. It's developed and build on linux and with linux in mind.
-But because project uses unix sockets and poll standard - it's possible that with minor changes, 
-solution can be compiled and working on other unixes.
+Compiled program is a single ELF executable. Only supported OS is Linux.
 
 ### Dependencies
-Dbust only dependency is OpenSSL which almost every Linux distribution has installed by default.
+Program only dynamic dependency is OpenSSL.
 
 ### Released Binaries
-In releases section on github are shipped binaries with working lastest stable version.
+Every release has shipped binaries on project releases page [HERE](https://github.com/technateNG/dbust/releases).
 
 ## ![dbust logo](images/dbust2.png) Do It Yourself
 Compilation is actually very easy:
@@ -32,18 +28,18 @@ make
 ```
 After some time compilation should succeed. Executable is in src directory.
 
-If you want contributing in project than you should compile tests as well.
-To do that you need this options set:
+If you want contribute to project than you should compile tests as well.
+To do that options need to be set like this:
 ```
 cmake --config debug -DDEV=ON .
 ```
-And that's all.
+Compiled tests binary should be in test directory.
 
 ## ![dbust logo](images/dbust2.png) Tips
-Dbust is really, really fast and have some catches.  
-Executable by default have enabled 100 sockets and delay set on 100 miliseconds. 
+Dbust is really, really fast and have some gotchas.  
+Program defaults are 100 sockets and delay set on 100 miliseconds. 
 This setup should give reasonable speed which doesn't alarm every security solution. But there are scenarios where 
-you want uleash full power to get results quickly.
+you want uleash application full speed to get results quickly.
 
 I made some benchmarks which shows me that:
 * 1 HTTP socket = 4k requests/second in local network
