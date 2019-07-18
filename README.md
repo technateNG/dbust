@@ -26,20 +26,20 @@ git clone https://github.com/technateNG/dbust && cd dbust
 cmake --config release .
 make
 ```
-After some time compilation should succeed. Executable is in src directory.
+After some time the compilation should succeed. Executable is in the src directory.
 
-If you want contribute to project than you should compile tests as well.
+If you want to contribute to the project than you should compile the tests as well.
 To do that options need to be set like this:
 ```
 cmake --config debug -DDEV=ON .
 ```
-Compiled tests binary should be in test directory.
+Compiled tests binary should be in the test directory.
 
 ## ![dbust logo](images/dbust2.png) Tips
-Dbust is really, really fast and have some gotchas.  
-Program defaults are 100 sockets and delay set on 100 miliseconds. 
-This setup should give reasonable speed which doesn't alarm every security solution. But there are scenarios where 
-you want uleash application full speed to get results quickly.
+Dbust is really, really fast and has some gotchas.  
+Program defaults are set to 100 sockets and a delay of 100 miliseconds. 
+This setup should give reasonable speeds which doesn't alarm every security solution. But there are scenarios where 
+you want to unleash the application's full speed to get results quickly.
 
 I made some benchmarks which shows me that:
 * 1 HTTP socket = 4k requests/second in local network
@@ -47,7 +47,7 @@ I made some benchmarks which shows me that:
 
 Maximum on my network card was 4k per sec on both HTTP and HTTPS.
 
-I'm pretty sure that this ratios can be improved in futher commits (with multithreading).
+I'm pretty sure that those ratios can be improved in further commits (with multithreading).
 
 For max speed on HTTP you should set:
 ```
