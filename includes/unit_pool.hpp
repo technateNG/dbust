@@ -1,36 +1,34 @@
 #pragma once
 
-#include <vector>
-#include <poll.h>
 #include "unit.hpp"
+#include <poll.h>
+#include <vector>
 
-namespace dbust
-{
-    class UnitPool
-    {
-        std::vector<Unit> units;
+namespace dbust {
+class UnitPool {
+    std::vector<Unit> units;
 
-        std::vector<::pollfd> polls;
+    std::vector<::pollfd> polls;
 
-    public:
-        explicit UnitPool(std::size_t size);
+public:
+    explicit UnitPool(std::size_t size);
 
-        ::pollfd* get_polls();
+    ::pollfd* get_polls();
 
-        std::size_t size();
+    std::size_t size();
 
-        std::vector<Unit>::iterator begin();
+    std::vector<Unit>::iterator begin();
 
-        std::vector<Unit>::iterator end();
+    std::vector<Unit>::iterator end();
 
-        std::vector<Unit>::const_iterator begin() const;
+    std::vector<Unit>::const_iterator begin() const;
 
-        std::vector<Unit>::const_iterator end() const;
+    std::vector<Unit>::const_iterator end() const;
 
-        Unit operator[](std::size_t pos) const;
+    Unit operator[](std::size_t pos) const;
 
-        Unit& operator[](std::size_t pos);
+    Unit& operator[](std::size_t pos);
 
-        void initialize_unit(const ConnectionFlavour& flavour);
-    };
+    void initialize_unit(const ConnectionFlavour& flavour);
+};
 }

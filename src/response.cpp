@@ -1,6 +1,7 @@
 #include "response.hpp"
 
-dbust::Response::Response(const std::string_view& raw) : str{ raw }
+dbust::Response::Response(const std::string_view& raw)
+    : str { raw }
 {
 }
 

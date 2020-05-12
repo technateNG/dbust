@@ -5,7 +5,8 @@ const char* dbust::IncorrectUrlException::what() const noexcept
     return "[!] Incorrect url.";
 }
 
-dbust::IncorrectUrlException::IncorrectUrlException(Part part) : part{ part }
+dbust::IncorrectUrlException::IncorrectUrlException(Part part)
+    : part { part }
 {
 }
 
@@ -24,7 +25,8 @@ const char* dbust::ArgumentNotSetException::what() const noexcept
     return "[!] Required argument not set.";
 }
 
-dbust::ArgumentNotSetException::ArgumentNotSetException(Arg arg) : arg{ arg }
+dbust::ArgumentNotSetException::ArgumentNotSetException(Arg arg)
+    : arg { arg }
 {
 }
 

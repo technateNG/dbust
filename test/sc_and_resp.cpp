@@ -1,11 +1,10 @@
 #define CATCH_CONFIG_MAIN
 
-#include <catch2/catch.hpp>
+#include "exceptions.hpp"
 #include "response.hpp"
 #include "status_codes.hpp"
 #include "target.hpp"
-#include "exceptions.hpp"
-
+#include <catch2/catch.hpp>
 
 TEST_CASE("StatusCodes and Response should cooperate to get correct match", "[Request,StatusCodes]")
 {
@@ -33,4 +32,3 @@ TEST_CASE("StatusCodes and Response should cooperate to get correct match", "[Re
         REQUIRE_FALSE(sc.contains(b_resp.get_status_code_ptr()));
     }
 }
-

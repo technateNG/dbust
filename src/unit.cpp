@@ -1,28 +1,23 @@
 #include "unit.hpp"
 
 dbust::Unit::Unit(
-        const ConnectionFlavour& flavour,
-        pollfd& poll
-) : flavour{ flavour }, poll{ poll }
+    const ConnectionFlavour& flavour,
+    pollfd& poll)
+    : flavour { flavour }
+    , poll { poll }
 {
 }
 
 void dbust::Unit::connect(const ::addrinfo& addrinfo)
 {
     int res = flavour.connect(*this, addrinfo);
-    if (res == -1)
-    {
-        std::cerr << "[!] Can't connect to target. Error message: " <<
-                  strerror(errno) << ". Reconnect issued." << std::endl;
+    if (res == -1) {
+        std::cerr << "[!] Can't connect to target. Error message: " << strerror(errno) << ". Reconnect issued." << std::endl;
         state = dbust::Unit::State::DISCONNECTED_WITH_ERROR;
-    }
-    else if (res == -2)
-    {
+    } else if (res == -2) {
         std::cerr << "[!] Can't establish SSL connection to target. Reconnect issued." << std::endl;
         state = dbust::Unit::State::DISCONNECTED_WITH_ERROR;
-    }
-    else if (res == -3)
-    {
+    } else if (res == -3) {
         state = dbust::Unit::State::DISCONNECTED;
     }
 }
@@ -30,14 +25,10 @@ void dbust::Unit::connect(const ::addrinfo& addrinfo)
 void dbust::Unit::receive(char* buffer, std::size_t length)
 {
     int res = flavour.receive(*this, buffer, length);
-    if (res == -1)
-    {
-        std::cerr << "[!] Can't recv data from: " << path <<
-                  ". Reconnect issued." << std::endl;
+    if (res == -1) {
+        std::cerr << "[!] Can't recv data from: " << path << ". Reconnect issued." << std::endl;
         state = dbust::Unit::State::BROKEN;
-    }
-    else
-    {
+    } else {
         state = dbust::Unit::State::EMPTY;
     }
 }
@@ -45,14 +36,10 @@ void dbust::Unit::receive(char* buffer, std::size_t length)
 void dbust::Unit::send(std::string_view& request)
 {
     int res = flavour.send(*this, request);
-    if (res == -1)
-    {
-        std::cerr << "[!] Can't send data to: " << path <<
-                  ". Reconnect issued." << std::endl;
+    if (res == -1) {
+        std::cerr << "[!] Can't send data to: " << path << ". Reconnect issued." << std::endl;
         state = dbust::Unit::State::BROKEN;
-    }
-    else
-    {
+    } else {
         state = dbust::Unit::State::SENDED;
     }
 }
@@ -93,8 +80,7 @@ const std::chrono::time_point<std::chrono::system_clock>& dbust::Unit::get_timeo
 }
 
 void dbust::Unit::set_timeout_tp(
-        const std::chrono::time_point<std::chrono::system_clock>& time_point
-)
+    const std::chrono::time_point<std::chrono::system_clock>& time_point)
 {
     timeout_tp = time_point;
 }

@@ -2,32 +2,30 @@
 
 #include <string>
 
-namespace dbust
-{
-    class Config;
-    class Target
-    {
-        friend class Config;
+namespace dbust {
+class Config;
+class Target {
+    friend class Config;
 
-        std::string host;
+    std::string host;
 
-        std::string port;
+    std::string port;
 
-        std::string resource_path;
+    std::string resource_path;
 
-        bool ssl{false};
+    bool ssl { false };
 
-        Target();
+    Target();
 
-    public:
-        const std::string& get_host() const;
+public:
+    const std::string& get_host() const;
 
-        const std::string& get_port() const;
+    const std::string& get_port() const;
 
-        const std::string& get_resource_path() const;
+    const std::string& get_resource_path() const;
 
-        bool is_ssl() const;
+    bool is_ssl() const;
 
-        static Target parse_url(const std::string_view& url);
-    };
+    static Target parse_url(const std::string_view& url);
+};
 }

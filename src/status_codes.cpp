@@ -1,7 +1,7 @@
 #include "status_codes.hpp"
 
-dbust::StatusCodes::StatusCodes(std::initializer_list<std::string> scs) :
-        raw_sc{ std::unordered_set<std::string>{scs} }
+dbust::StatusCodes::StatusCodes(std::initializer_list<std::string> scs)
+    : raw_sc { std::unordered_set<std::string> { scs } }
 {
 }
 

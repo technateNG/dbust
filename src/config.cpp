@@ -1,5 +1,5 @@
-#include "target.hpp"
 #include "config.hpp"
+#include "target.hpp"
 
 const dbust::StatusCodes& dbust::Config::get_status_codes() const
 {
@@ -92,7 +92,3 @@ void dbust::Config::set_delay(std::size_t delay)
 }
 
 dbust::Config::Config() = default;
-
-
-
-

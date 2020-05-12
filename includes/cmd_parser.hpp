@@ -1,23 +1,23 @@
 #pragma once
 
-#include <iostream>
-#include <getopt.h>
+#include "batch_opt_parser.hpp"
 #include "config.hpp"
 #include "dictionary_reader.hpp"
-#include "batch_opt_parser.hpp"
 #include "exceptions.hpp"
+#include <getopt.h>
+#include <iostream>
 
 namespace dbust {
-    class CmdParser {
-        const DictionaryReader& reader;
+class CmdParser {
+    const DictionaryReader& reader;
 
-        const BatchOptParser& parser;
+    const BatchOptParser& parser;
 
-    public:
-        static const std::string description;
+public:
+    static const std::string description;
 
-        CmdParser(const DictionaryReader& d_reader, const BatchOptParser& parser);
+    CmdParser(const DictionaryReader& d_reader, const BatchOptParser& parser);
 
-        Config parse(int argc, const char* argv[]);
-    };
+    Config parse(int argc, const char* argv[]);
+};
 }

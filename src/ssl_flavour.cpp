@@ -10,52 +10,44 @@ int dbust::SslFlavour::prepare(dbust::Unit& unit) const
 }
 
 int dbust::SslFlavour::connect(
-        dbust::Unit& unit,
-        const ::addrinfo& addrinfo
-) const
+    dbust::Unit& unit,
+    const ::addrinfo& addrinfo) const
 {
     auto s_conn = ::connect(
-            unit.get_file_descriptor(),
-            addrinfo.ai_addr,
-            addrinfo.ai_addrlen
-    );
-    if (s_conn < 0)
-    {
+        unit.get_file_descriptor(),
+        addrinfo.ai_addr,
+        addrinfo.ai_addrlen);
+    if (s_conn < 0) {
         return (errno == EINPROGRESS) ? -3 : -1;
     }
     s_conn = ::SSL_connect(unit.get_ssl_ptr());
-    if (s_conn < 0)
-    {
+    if (s_conn < 0) {
         return -2;
     }
     return 0;
 }
 
 int dbust::SslFlavour::send(
-        dbust::Unit& unit,
-        const std::string_view& request
-) const
+    dbust::Unit& unit,
+    const std::string_view& request) const
 {
     auto s_bytes = ::SSL_write(unit.get_ssl_ptr(), request.data(), request.length());
-    if (s_bytes <= 0)
-    {
+    if (s_bytes <= 0) {
         return -1;
     }
     return 0;
 }
 
 int dbust::SslFlavour::receive(
-        dbust::Unit& unit,
-        char* buffer,
-        const std::size_t length
-) const
+    dbust::Unit& unit,
+    char* buffer,
+    const std::size_t length) const
 {
     auto r_bytes = ::SSL_read(unit.get_ssl_ptr(), buffer, length);
-    if (!r_bytes)
-    {
+    if (!r_bytes) {
         return -1;
     } else
-    return 0;
+        return 0;
 }
 
 dbust::SslFlavour& dbust::SslFlavour::instance()
@@ -71,4 +63,3 @@ int dbust::SslFlavour::close(dbust::Unit& unit) const
     ::close(unit.get_file_descriptor());
     return 0;
 }
-

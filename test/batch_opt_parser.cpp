@@ -1,13 +1,11 @@
-#include <catch2/catch.hpp>
 #include "batch_opt_parser.hpp"
+#include <catch2/catch.hpp>
 
 template <typename T>
 bool contains(T pattern, std::vector<T>& vec)
 {
-    for (T& elem : vec)
-    {
-        if (elem == pattern)
-        {
+    for (T& elem : vec) {
+        if (elem == pattern) {
             return true;
         }
     }

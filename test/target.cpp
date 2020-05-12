@@ -1,6 +1,6 @@
-#include <catch2/catch.hpp>
 #include "target.hpp"
 #include "exceptions.hpp"
+#include <catch2/catch.hpp>
 
 TEST_CASE("Target should correctly parse URL", "[Target]")
 {
