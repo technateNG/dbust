@@ -1,11 +1,52 @@
 #pragma once
 
-#include "status_codes.hpp"
-#include "target.hpp"
+#include <getopt.h>
+#include <iostream>
+#include <string>
+#include <sys/mman.h>
+#include <sys/stat.h>
 #include <unordered_set>
 #include <vector>
 
+#include "exceptions.hpp"
+
 namespace dbust {
+struct BatchOptParser {
+    std::vector<std::string> parse(const std::string_view& opt) const;
+};
+
+struct DictionaryReader {
+    virtual std::vector<std::string> read_dictionary(std::string_view path) const = 0;
+};
+
+struct MMapDictionaryReader : public DictionaryReader {
+    std::vector<std::string> read_dictionary(std::string_view path) const override;
+};
+
+using StatusCodes = std::vector<std::string>;
+
+class Target {
+    std::string host;
+
+    std::string port;
+
+    std::string resource_path;
+
+    bool ssl { false };
+public:
+    const std::string& get_host() const;
+
+    const std::string& get_port() const;
+
+    const std::string& get_resource_path() const;
+
+    bool is_ssl() const;
+
+    static Target parse_url(const std::string_view& url);
+    
+    Target();
+};
+
 class Config {
     StatusCodes status_codes { "200", "201", "204", "301", "302", "307", "400", "401", "403", "500" };
 
@@ -63,5 +104,18 @@ public:
     std::size_t get_delay() const;
 
     void set_delay(std::size_t delay);
+};
+
+class CmdParser {
+    const DictionaryReader& reader;
+
+    const BatchOptParser& parser;
+
+public:
+    static const std::string description;
+
+    CmdParser(const DictionaryReader& d_reader, const BatchOptParser& parser);
+
+    Config parse(int argc, const char* argv[]);
 };
 }
